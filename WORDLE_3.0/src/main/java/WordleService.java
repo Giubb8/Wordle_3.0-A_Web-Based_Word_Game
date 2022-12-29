@@ -5,15 +5,16 @@ import java.util.Hashtable;
 /* CLASSE CHE IMPLEMENTA IL SERVIZIO DI WORDLE */
 public class WordleService {
     /* COSTANTI E STRUTTURE DI SUPPORTO */
-    private Hashtable<String,Player> players_table;
+    private final Hashtable<String,Player> players_table;
     final private static String USERNAMENOTEXIST="ERR_UNAME_NOT_EXIST";
     final private static String PASSWORDNOMATCH="ERR_PASSWORD_NOT_MATCHING";
     final private static String SUCCESS="SUCCESS";
     final private static int ERROR=1;
+    private final StringBuilder secretword;
 
-
-    public WordleService(RegisterServiceImpl registerService){
+    public WordleService(RegisterServiceImpl registerService,StringBuilder secretword){
         this.players_table=registerService.getPlayers_table();
+        this.secretword=secretword;
     }
     /* METODO PER EFFETTUARE IL LOGIN DA PARTE DELL'UTENTE */
     public int login(BufferedReader in, PrintWriter out) throws IOException, InterruptedException {
@@ -42,14 +43,26 @@ public class WordleService {
         else{ //altrimenti se la password coincide
             out.println(SUCCESS);
         }
+        /* TEST */
+        /*for (int i = 0; i <10000000 ; i++) {
+            System.out.println("Thread:"+Thread.currentThread().getName()+" SecretWord: "+secretword);
+            Thread.sleep(2000);
+        }*/
+
         return ret;
     }
 
-    /* METODO PER IL LOGOUT DA PARTE DELL'UTENTE */ //TODO ANCORA DA IMPLEMENTARE
+    /* FUNZIONE PER IL LOGOUT DA PARTE DELL'UTENTE */ //TODO ANCORA DA IMPLEMENTARE
     public int logout(){
         int ret=122;
         System.out.println("logout");
         return ret;
     }
+
+    /* FUNZIONE PER AVVIARE IL GIOCO */
+    public int playwordle(String secret_word){
+        return 0;
+    }
+
 
 }

@@ -4,7 +4,7 @@ public class Player implements Serializable {
     private static final long serialVersionUID = 1L;
     final private String username;
     final private String password;
-    private int record;
+    private final int record;
 
     public Player(String username,String password,int record){
         this.password=password;

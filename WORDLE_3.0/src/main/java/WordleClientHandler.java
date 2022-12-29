@@ -8,20 +8,25 @@ import java.util.Hashtable;
 /* CLASSE PER LA GESTIONE DELLA CONNESSIONE CON I CLIENT */
 public class WordleClientHandler implements  Runnable{
     /* UTILITIES PER LA GESTIONE DELLA CONNESSIONE */
-    private Socket client;
-    private BufferedReader in;
-    private PrintWriter out;
-    private WordleService wordleService;
+    private final Socket client;
+    private final BufferedReader in;
+    private final PrintWriter out;
+    private final WordleService wordleService;
+    private final StringBuilder secretword;
 
-    public WordleClientHandler(Socket clientSocket, RegisterServiceImpl registerService) throws IOException {
+
+
+    public WordleClientHandler(Socket clientSocket, RegisterServiceImpl registerService,StringBuilder secretword) throws IOException {
         this.client=clientSocket;
+        this.secretword=secretword;
         in=new BufferedReader(new InputStreamReader(client.getInputStream()));
         out=new PrintWriter(client.getOutputStream(),true);
-        wordleService=new WordleService(registerService);
+        wordleService=new WordleService(registerService,secretword);
+        System.out.println("WORDLECLIENTHANDLER CREATO");
     }
 
     /* METODO PER LA LETTURA SAFE DEGLI INPUT DA PARTE DEL CLIENT */
-    public String readInput() throws IOException {
+    public String readInput(BufferedReader in) throws IOException {
         String read=in.readLine();
         if(read==null){
             System.out.println("Readed Null from user");
@@ -36,12 +41,14 @@ public class WordleClientHandler implements  Runnable{
         while(is_over==0){
             System.out.println("ciclo while handler");
             try {
-                String input=readInput();
+                String input=readInput(in);// da controllare largomento
+                System.out.println(input);
                 if(input==null)
                     break;
                 switch (input) { //enhanced switch di java 12 dare un occhio in teoria non c'e' bisogno di break
                     case "login" -> is_over = wordleService.login(in, out);
                     case "logout" -> is_over = wordleService.logout();
+                    case "playwordle" ->is_over=wordleService.playwordle("TEST");
                     default -> {
                         is_over = 1;
                         System.out.println("Comunicazione Terminata");

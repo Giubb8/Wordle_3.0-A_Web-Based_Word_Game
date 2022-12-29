@@ -2,7 +2,12 @@
   "Penny": {
     "username": "Penny",
     "password": "Cane",
-    "record": 0.0
+    "record": 0
+  },
+  "Sgenllo": {
+    "username": "Sgenllo",
+    "password": "lol",
+    "record": 0
   },
   "Prova": {
     "username": "Prova",
@@ -12,36 +17,36 @@
   "Carlo": {
     "username": "Carlo",
     "password": "Conti",
-    "record": 0.0
+    "record": 0
   },
   "Milo": {
     "username": "Milo",
     "password": "Manara",
-    "record": 0.0
+    "record": 0
   },
   "Amico": {
     "username": "Amico",
     "password": "Fritzi",
-    "record": 0.0
+    "record": 0
   },
   "Paolo": {
     "username": "Paolo",
     "password": "Palla",
-    "record": 0.0
+    "record": 0
   },
   "Andrea": {
     "username": "Andrea",
     "password": "Carollo",
-    "record": 0.0
+    "record": 0
   },
   "Ciao": {
     "username": "Ciao",
     "password": "duemilaventi",
-    "record": 0.0
+    "record": 0
   },
   "Stefania": {
     "username": "Stefania",
     "password": "Martino",
-    "record": 0.0
+    "record": 0
   }
 }

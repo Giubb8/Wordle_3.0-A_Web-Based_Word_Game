@@ -23,25 +23,27 @@ public class WordleServerMain {
     public static void main(String[] args) throws IOException {
 
         String configfile_path=args[0];
+        StringBuilder secretword=new StringBuilder();
         ThreadPoolExecutor threadpool=(ThreadPoolExecutor) newCachedThreadPool();
         RegisterServiceImpl registerService=new RegisterServiceImpl(PORT_NUMBER,REGISTRY_PORT,SERVER_NAME);//Oggetto per la registrazione degli utenti tramite RMI
-        ServerSocket server=new ServerSocket(PORT_NUMBER);
 
         /* CONFIGURO IL SERVER E FACCIO PARTIRE RMI PER LA REGISTRAZIONE  */
         configserver(configfile_path);
         RMI_register_start(registerService);
+        try (ServerSocket server = new ServerSocket(PORT_NUMBER)) {
 
-        /* STA IN ATTESA DELLE CONNESSIONI CON I CLIENT */
-        while(true){
-            threadpool.execute(new WordleClientHandler(server.accept(),registerService));
+            /* CREO E AVVIO IL MANAGER PER LA PAROLA SEGRETA */
+            SecretWordManager sw_manager = new SecretWordManager(secretword, WORD_DURATION);
+            sw_manager.start();
+
+            /* STA IN ATTESA DELLE CONNESSIONI CON I CLIENT */
+            while (true) {
+                threadpool.execute(new WordleClientHandler(server.accept(), registerService, secretword));
+            }
         }
 
+
     }
-
-
-
-
-
 
     /* FUNZIONE PER LA CONFIGURAZIONE INIZIALE DEL SERVER */
     static public void configserver(String configfile_path){
@@ -71,7 +73,7 @@ public class WordleServerMain {
             registry.rebind(SERVER_NAME,stub);
         }
         catch (RemoteException e){
-            System.out.println("Communication error " + e.toString());
+            System.out.println("Communication error " + e);
         }
     }
 }

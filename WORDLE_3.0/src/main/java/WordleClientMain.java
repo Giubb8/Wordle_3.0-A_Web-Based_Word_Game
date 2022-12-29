@@ -24,9 +24,12 @@ public class WordleClientMain {
         configclient(configfile_path);
 
         /*CREAZIONE DELLA SOCKET E DEGLI STREAM PER EFFETTUARE LA CONNESSIONE */
-        Socket socket=new Socket("127.0.0.1",PORT_NUMBER);
-        BufferedReader input=new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        PrintWriter output=new PrintWriter(socket.getOutputStream(),true);
+        BufferedReader input;
+        PrintWriter output;
+        Socket socket = new Socket("127.0.0.1", PORT_NUMBER);
+        input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        output = new PrintWriter(socket.getOutputStream(), true);
+
         /* FASE DI BENVENUTO E SELEZIONE OPZIONE  */
         System.out.println("Benvenuto in Wordle 3.0\n"+"1) Registrazione\n"+"2) Login\n"+"3) Spiegazione Gioco");
         Scanner stdin = new Scanner(System.in);
@@ -37,17 +40,13 @@ public class WordleClientMain {
         switch (initial_choice){
             case 1 -> register();
             case 2 -> {
-                output.println("login");
+                String login="login";
+                output.println(login);//QUI
                 login(input,output);
                 System.out.println("uscito dal login client");
             }
             default -> System.out.println("SPIEGAZIONE");
         }
-        /*if(initial_choice==1)
-            register();
-        else{
-
-        }*/
 
         /* MAIN LOOP DEL CLIENT FINO A QUANDO NON EFFETTUO IL LOGOUT O INTERROMPO PRENDO COMANDI */
         while(is_over==0) {
@@ -55,12 +54,11 @@ public class WordleClientMain {
             String command=stdin.next();
             System.out.println("ricevuto "+command);
             output.println(command);
-            switch (command) {
-                case "logout" -> logout();
-                default -> {
-                    is_over = 1;
-                    System.out.println("Ho finito lato client");
-                }
+            if (command.equals("logout")) {
+                logout();
+            } else {
+                is_over = 1;
+                System.out.println("Ho finito lato client");
             }
         }
 
@@ -95,7 +93,7 @@ public class WordleClientMain {
             System.out.println("PLAYER RITORNATO:"+testplayer.toString());
         }
         catch (Exception e) {
-            System.out.println("Error in invoking object method " + e.toString() + e.getMessage());e.printStackTrace();
+            System.out.println("Error in invoking object method " + e + e.getMessage());e.printStackTrace();
         }
     }
 
@@ -124,7 +122,7 @@ public class WordleClientMain {
         /*EFFETTUO IL CONTROLLO SULLA PASSWORD */
         String result2=input.readLine();
         if(result2.equals(PASSWORDNOMATCH)){
-            System.out.println("Username non registrato");
+            System.out.println("Password non corrisponde");
             login(input, output);
         }
 
