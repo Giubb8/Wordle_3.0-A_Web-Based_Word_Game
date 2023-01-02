@@ -20,7 +20,7 @@ public class SecretWordManager extends  Thread{
         while(true){//TODO FARE UNA CONDIZIONE DI TERMINAZIONE
             int random= new Random().nextInt(words_list.size());
             secretword.append(words_list.get(random));
-            System.out.println("THE SECRET WORD NOW IS: "+secretword);
+            //System.out.println("THE SECRET WORD NOW IS: "+secretword);
             try {Thread.sleep(time);} catch (InterruptedException e) {throw new RuntimeException(e);}
             secretword.setLength(0);
         }
@@ -28,7 +28,7 @@ public class SecretWordManager extends  Thread{
     }
 
     /* FUNZIONE CHE TRASFORMA IL FILE WORDS IN UN ARRAYLIST (PER MOTIVI DI EFFICENZA NELL'ACCESSO ) */
-    private static ArrayList<String> txt_to_list(String path){
+    public ArrayList<String> txt_to_list(String path){
         Scanner s;
         try {
             s = new Scanner(new File(path));

@@ -1,25 +1,60 @@
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Hashtable;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 /* CLASSE CHE IMPLEMENTA IL SERVIZIO DI WORDLE */
 public class WordleService {
-    /* COSTANTI E STRUTTURE DI SUPPORTO */
-    private final Hashtable<String,Player> players_table;
+    /* COSTANTI E CODICI DI ERRORE */
     final private static String USERNAMENOTEXIST="ERR_UNAME_NOT_EXIST";
     final private static String PASSWORDNOMATCH="ERR_PASSWORD_NOT_MATCHING";
     final private static String SUCCESS="SUCCESS";
+    final private static String WORD_NOT_EXISTS="WORD_NOT_EXISTS";
+    private static final int WRONG_WORD = 15001;
     final private static int ERROR=1;
-    private final StringBuilder secretword;
+    final private int ERROR_CODE=13001;
+    final private int OK_CODE=12002;
+    final private static int OK=0;
 
-    public WordleService(RegisterServiceImpl registerService,StringBuilder secretword){
+    /* STRUTTURE DI SUPPORTO */
+    private final Hashtable<String,Player> players_table;
+    private final StringBuilder secretword;
+    private ArrayList<String> played_words;
+    private String session_username;
+    private Hashtable<String, ArrayList<String>> playedwords;
+    private ArrayList<String> words;
+    private RegisterServiceImpl registerService;
+    /* UTILITIES PER GLI INDIZI */
+    public static final String ANSI_WHITE_BACKGROUND = "\u001B[47m";
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_BLACK = "\u001B[30m";
+    private static final String ANSI_END = "\u001B[0m";
+    public static final String ANSI_GREEN_BACKGROUND = "\u001B[42m";
+    public static final String ANSI_YELLOW_BACKGROUND = "\u001B[43m";
+
+
+    public WordleService(RegisterServiceImpl registerService,StringBuilder secretword,Hashtable<String, ArrayList<String>> playedwords,ArrayList<String> words){
         this.players_table=registerService.getPlayers_table();
+        this.registerService=registerService;
         this.secretword=secretword;
+        played_words=new ArrayList<String>();
+        this.playedwords=playedwords;
+        this.words=words;
     }
+
     /* METODO PER EFFETTUARE IL LOGIN DA PARTE DELL'UTENTE */
     public int login(BufferedReader in, PrintWriter out) throws IOException, InterruptedException {
         /* VARIABILI DI SUPPORTO E STREAM */
-        int ret=0;
+        int ret=OK;
         String username=in.readLine();
         String password=in.readLine();
         System.out.println("Username: "+username+" Password: "+password);
@@ -42,27 +77,145 @@ public class WordleService {
         }
         else{ //altrimenti se la password coincide
             out.println(SUCCESS);
+            session_username=username;
+            System.out.println(registerService.getPlayers_table().get(username));
         }
-        /* TEST */
-        /*for (int i = 0; i <10000000 ; i++) {
-            System.out.println("Thread:"+Thread.currentThread().getName()+" SecretWord: "+secretword);
-            Thread.sleep(2000);
-        }*/
 
         return ret;
     }
 
     /* FUNZIONE PER IL LOGOUT DA PARTE DELL'UTENTE */ //TODO ANCORA DA IMPLEMENTARE
     public int logout(){
-        int ret=122;
+        int ret=1;
         System.out.println("logout");
         return ret;
     }
 
+    /* FUNZIONE PER GENERARE GLI INDIZI DA RESTITUIRE ALL'UTENTE */
+    public static  StringBuilder getWordHint(String word,String secWord) {
+        StringBuilder hints = new StringBuilder();
+        for (int i = 0; i < secWord.length(); i++) {
+            char currChar = word.charAt(i);
+            String newChar;
+            if (secWord.charAt(i) == currChar) { // lettera nella posizione giusta
+                newChar = ANSI_GREEN_BACKGROUND +ANSI_BLACK+ currChar + ANSI_END;
+            }
+            else if (secWord.indexOf(currChar) != -1) { // lettera c'è ma non nella posizione i
+                newChar = ANSI_YELLOW_BACKGROUND + ANSI_BLACK+ currChar + ANSI_END;
+            }
+            else  { // lettera non ce
+                newChar = ANSI_WHITE_BACKGROUND+String.valueOf(currChar);
+            }
+            hints.append(newChar);
+        }
+        return hints;
+    }
     /* FUNZIONE PER AVVIARE IL GIOCO */
-    public int playwordle(String secret_word){
-        return 0;
+    public int playwordle(StringBuilder secret_word,BufferedReader in, PrintWriter out) throws IOException {
+        System.out.println("sessione userneame "+session_username);
+
+        /* SALVO LA PAROLA SEGRETA CORRENTE IN UNA STRINGA QUINDI IMMUTABLE */
+        String current_secretword=secret_word.toString();
+        /* EFFETTUO CONTROLLO SULLE PAROLE GIOCATE DALL'UTENTE */
+        //boolean condition=(!playedwords.get(session_username).isEmpty() && playedwords.get(session_username).contains(current_secretword));
+        boolean condition2=(!registerService.getPlayers_table().get(session_username).getPlayedwords().isEmpty() && registerService.getPlayers_table().get(session_username).getPlayedwords().contains(current_secretword));
+        if (condition2){
+            System.out.println("Controllo con la hashtabel");
+            System.out.println("No more chances for this word");
+            System.out.println("Funzione playwordle: Lista parole giocate "+played_words);
+            out.println(ERROR_CODE);
+            return ERROR;
+        }
+
+        /* SE UTENTE NON HA GIOCATO LA PAROLA LA AGGIUNGO ALLA SUA LISTA */
+       // played_words.add(current_secretword);
+        //playedwords.get(session_username).add(secret_word.toString());
+        /*System.out.println("Inserita nuova parola per "+session_username);
+        System.out.println(playedwords);
+        */
+        //System.out.println("Funzione playwordle: Lista parole giocate "+played_words);
+
+        /* INVIO RESPONSE E LA SECRET WORD PER LA GESTIONE DELLA STESSA LATO CLIENT */
+        out.println(OK_CODE);
+        out.println(current_secretword);
+        int client_finished=0;
+        int client_response = -1;
+        //System.out.println(words);
+        while(client_finished==0){
+            String client_guess=in.readLine();
+            System.out.println("parola del client:"+client_guess+" "+words.contains(client_guess));
+
+            /* CONTROLLO SE LA PAROLA ESISTE NEL VOCABOLARIO */
+            if(words.contains(client_guess)!=true){
+                /* SE NON ESISTE */
+                System.out.println("La parola non esiste nel vocabolario");
+                out.println(WORD_NOT_EXISTS);
+            }
+            else{
+                /* SE ESISTE RESTITUISCO L'INDIZIO */
+                out.println(getWordHint(client_guess,current_secretword));//TODO RESTITUIRE O VEDEERE COSA DEVO RESTITUIRE
+            }
+            client_response=Integer.parseInt(in.readLine());
+            System.out.println("client response:"+client_response);
+
+            if(client_response==ERROR_CODE || client_response!=WRONG_WORD)
+                client_finished=1;
+
+        }
+        /* TODO GESTIONE DEL RISULTATO DEL CLIENT TIPO VA MESSO IN CLASSIFICA E AGGORNATA  */
+        /* TODO IL RISULATO DELLA PARTITA LO PRENDO DA CLIENT RESPONSE DI SOPRA E CONTROLLARE CHE SIA DIVERSO DA ERROR CODE E WRONG WORD */
+        int score=0;
+        if(client_response!=ERROR_CODE && client_response!=WRONG_WORD)
+             score=(client_response*-1)+4;
+        System.out.println("score: "+score);
+        registerService.addwordtoplayer(session_username,current_secretword,score);
+
+        String traduzione=translateWords(current_secretword);
+        System.out.println("traduzione: "+traduzione);
+        out.println(traduzione);
+        return OK;
+
     }
 
+    public static String translateWords(String word) throws IOException {
+        //Richiedo all'url la parola
+        URL url1 = new URL("https://api.mymemory.translated.net/get?q=" + word + "&langpair=en|it");
+        String traduzione="";
+        String stampa1=new String();
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(url1.openStream()))) {
+            StringBuilder inputLine = new StringBuilder();
+            String reader;
 
+            while ((reader = in.readLine()) != null) {
+                inputLine.append(reader);
+            }
+
+            JSONObject jsonObject;
+            JSONParser parser = new JSONParser();
+
+            try {
+                jsonObject = (JSONObject) parser.parse(inputLine.toString());
+
+                JSONArray array = (JSONArray) jsonObject.get("matches");
+
+                ArrayList<String> tmpArray = new ArrayList<String>(array.size());
+                //Prendo il JSON ricevuto e per ogni elemento prendo solamente la traduzione e la inserisco nella ArrayList
+                for (Object o : array) {
+                    JSONObject obj = (JSONObject) o;
+                    stampa1 = (String) obj.get("translation");
+                    System.out.println(stampa1+""+obj.toString());
+                    tmpArray.add(stampa1);
+                    traduzione.concat(stampa1);
+
+                }
+                System.out.println(tmpArray);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+        } catch (MalformedURLException mue) {
+            mue.printStackTrace(System.err);
+        }
+        return stampa1;
+    }
 }

@@ -4,6 +4,8 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -19,13 +21,16 @@ public class WordleServerMain {
     public static int WORD_DURATION;
     public static int REGISTRY_PORT;
     public static String SERVER_NAME;
+    public static final String path_to_wordsfile="src/main/resources/words.txt";
 
     public static void main(String[] args) throws IOException {
 
         String configfile_path=args[0];
         StringBuilder secretword=new StringBuilder();
         ThreadPoolExecutor threadpool=(ThreadPoolExecutor) newCachedThreadPool();
-        RegisterServiceImpl registerService=new RegisterServiceImpl(PORT_NUMBER,REGISTRY_PORT,SERVER_NAME);//Oggetto per la registrazione degli utenti tramite RMI
+        //TODO FORSE POSSO TRASFORMARE QUESTA HASHTABLE IN UNA HASHTABLE CONTENTENTE TIPO LE STATISTICHE DI OGNI GIOCATORE METTENDO UN OGGETTO AL POSTO DI ARRAYLIST
+        Hashtable<String,ArrayList<String>> playedwords=new Hashtable<>();
+        RegisterServiceImpl registerService=new RegisterServiceImpl(PORT_NUMBER,REGISTRY_PORT,SERVER_NAME,playedwords);//Oggetto per la registrazione degli utenti tramite RMI
 
         /* CONFIGURO IL SERVER E FACCIO PARTIRE RMI PER LA REGISTRAZIONE  */
         configserver(configfile_path);
@@ -35,10 +40,10 @@ public class WordleServerMain {
             /* CREO E AVVIO IL MANAGER PER LA PAROLA SEGRETA */
             SecretWordManager sw_manager = new SecretWordManager(secretword, WORD_DURATION);
             sw_manager.start();
-
+            ArrayList<String> words = sw_manager.txt_to_list(path_to_wordsfile);
             /* STA IN ATTESA DELLE CONNESSIONI CON I CLIENT */
             while (true) {
-                threadpool.execute(new WordleClientHandler(server.accept(), registerService, secretword));
+                threadpool.execute(new WordleClientHandler(server.accept(),registerService,secretword,playedwords,words));
             }
         }
 

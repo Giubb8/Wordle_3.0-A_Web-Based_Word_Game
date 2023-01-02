@@ -15,7 +15,12 @@ public class WordleClientMain {
     public static String SERVER_NAME;
     final private static String USERNAMENOTEXIST="ERR_UNAME_NOT_EXIST";
     final private static String PASSWORDNOMATCH="ERR_PASSWORD_NOT_MATCHING";
+    final private static String WORD_NOT_EXISTS="WORD_NOT_EXISTS";
+    final private static int ERROR_CODE=13001;
+    final private static int WRONG_WORD=15001;
+    public static final String ANSI_RESET = "\u001B[0m";
 
+    final private static int OK_CODE=12002;
     public static void main(String[] args) throws IOException {
         /* CONFIGURAZIONE INIZIALE DEL CLIENT */
         String configfile_path=args[0];
@@ -38,7 +43,12 @@ public class WordleClientMain {
         /* SCELTA TRA LOGIN,REGISTRAZIONE E SPIEGAZIONE  */
         //ovviamente da cambiare
         switch (initial_choice){
-            case 1 -> register();
+            case 1 -> {
+                register();
+                String login="login";
+                output.println(login);
+                login(input,output);
+            }
             case 2 -> {
                 String login="login";
                 output.println(login);//QUI
@@ -50,26 +60,108 @@ public class WordleClientMain {
 
         /* MAIN LOOP DEL CLIENT FINO A QUANDO NON EFFETTUO IL LOGOUT O INTERROMPO PRENDO COMANDI */
         while(is_over==0) {
-            System.out.println("dentro loop isover client");
-            String command=stdin.next();
+            System.out.println("OPZIONI DISPONIBILI:\n"+"1)PlayWordle\n"+"2)Logout");
+            int command=stdin.nextInt();
             System.out.println("ricevuto "+command);
-            output.println(command);
-            if (command.equals("logout")) {
-                logout();
-            } else {
-                is_over = 1;
-                System.out.println("Ho finito lato client");
+            switch (command){
+                case 1 :{
+                    output.println("playwordle");//segnalo al server che voglio giocare
+                    playwordle(input,output);
+                    break;
+                }
+                case 2 : {
+                    output.println("logout");
+                    logout();
+                    is_over=1;
+                    break;
+                }
+                default : {
+                    System.out.println("Opzione non riconosciuta");
+                }
+
+
             }
         }
 
 
     }
 
+    private static void playwordle(BufferedReader input, PrintWriter output) throws IOException {
+        System.out.println("Sto giocando");
+        String secretword;
+        Scanner stdin=new Scanner(System.in);
+        output.flush();
+
+        /* CONTROLLO CHE L'UTENTE NON ABBIA GIA GIOCATO QUESTA PAROLA */
+        int response=Integer.parseInt( input.readLine());
+        System.out.println("respone ricevuto: "+response);
+
+
+        if(response==ERROR_CODE){
+            /*gestione dell'errore*/
+            System.out.println("Hai gia effettuato il tuo tentativo per questa parola");
+            return;
+        }
+        //ALTRIMENTI SE TUTTO OK
+        /* RICEVO LA PAROLA SEGRETA DAL SERVER */
+        secretword= input.readLine();
+        System.out.println("parola segreta ricevuta "+secretword);
+        int tries=0;
+        System.out.println("Effettua il tentativo per indovinare :");
+        while(tries<3){//TODO CONTROLLARE SE CONDIZIONE VA BENE E CAMBIARE IL NUMERO DI TENTATIVI
+            /* UTENTE SCRIVE NUOVA PAROLA */
+            String guess=stdin.nextLine();
+
+            /* INVIO IL GUESS AL SERVER ATTRAVERSO LA FUNZIONE SENDWORD() */
+            StringBuilder retstring=new StringBuilder(sendWord(guess,input,output));
+            System.out.println(retstring);
+
+            /* SE LA PAROLA INVIATA NON ESISTE */
+            if(retstring.toString().equals(WORD_NOT_EXISTS)){
+                //TODO QUA DEVO DARE L OPPORTUNITA DI RIPROVARE QUINDI DEVO FAR FARE UN ALTRO CICLO
+                System.out.println("Parola non Esiste");
+                output.println(WRONG_WORD);
+            }
+            else { /* ALTRIMENTI SE LA PAROLA ESISTE */
+                /* SE LA PAROLA E' STATA INDOVINATA */
+                if(guess.equals(secretword)){
+                    int score=tries+1;
+                    System.out.println("Hai indovinato la parola in "+score+" tentativi");
+                    output.println(score);
+
+                    break;
+                }
+                else {
+                    /* ALTRIMENTI SE LA PAROLA NON E STATA INDOVINATA */
+                    tries++;//TODO QUESTO VA INSCATOLATO
+                    if(tries==3){/* SE HO FINITO I TENTATIVI */
+                        output.println(ERROR_CODE);
+                    }else{ /* SE LA PAROLA E' SBAGLIATA */
+                        output.println(WRONG_WORD);
+                    }
+                }
+
+            }
+
+        }
+        System.out.println(ANSI_RESET+"Ho finito i tentativi");
+        String traduzione;
+        traduzione=input.readLine();
+        System.out.println("Parola segreta: "+secretword+" Traduzione: "+traduzione);
+    }
+
+
+
+    static public StringBuilder sendWord(String guess,BufferedReader input, PrintWriter output) throws IOException {
+        output.println(guess);
+        StringBuilder retstring= new StringBuilder(input.readLine());
+        return retstring;
+    }
+
     /* METODO PER EFFETTUARE IL LOGOUT */
     private static void logout() {
         System.out.println("Ho finito");
     }
-
     /* METODO PER LA REGISTRAZIONE DI UN NUOVO GIOCATORE */
     static public void register() throws RemoteException {
         /* SUPPORTO PER DATI E CONNESSIONE */

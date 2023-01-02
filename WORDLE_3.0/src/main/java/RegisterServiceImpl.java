@@ -8,6 +8,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.Hashtable;
 
 /* CLASSE CHE IMPLEMENTA L'INTERFACCIA PER LA REGISTRAZIONE DEGLI UTENTI VIA RMI */
@@ -21,8 +22,8 @@ public class RegisterServiceImpl implements RegisterService{
     private final Player testplayer=new Player("FrancoMicalizzi","Stridio",0);
     private final Gson gson=new GsonBuilder().setPrettyPrinting().create();
     private final String playersdata_path="src/main/resources/PlayersData.json";
-
-    public RegisterServiceImpl(int PORT_NUMBER,int REGISTRY_PORT,String SERVER_NAME) throws RemoteException, FileNotFoundException {
+    private Hashtable<String, ArrayList<String>> playedwords;
+    public RegisterServiceImpl(int PORT_NUMBER,int REGISTRY_PORT,String SERVER_NAME,Hashtable<String,ArrayList<String>> playedwords) throws RemoteException, FileNotFoundException {
         /* INIZIALIZZO LA HASHTABLE PER RIPRENDERE LO STATO PRECEDENTE DAL FILE .JSON */
         JsonReader reader = new JsonReader(new FileReader(playersdata_path));
         //problemi con parsing del tipo a runtime quindi ho dovuto mettere player
@@ -33,6 +34,7 @@ public class RegisterServiceImpl implements RegisterService{
         this.REGISTRY_PORT=REGISTRY_PORT;
         this.SERVER_NAME=SERVER_NAME;
         //System.out.println("APPENA INIZIALIZZATO: "+players_table);
+        this.playedwords=playedwords;
     }
 
     /* FUNZIONE USATA PER LA REGISTRAZIONE DEGLI UTENTI  */
@@ -40,6 +42,8 @@ public class RegisterServiceImpl implements RegisterService{
 
         /* INSERISCO IL NUOVO GIOCATORE NELLA TABELLA  */
         players_table.put(newplayer.getUsername(), newplayer);
+        playedwords.put(newplayer.getUsername(),new ArrayList<String>());
+        System.out.println(playedwords);
         //System.out.println(players_table);
 
         /* AGGIORNO IL FILE .JSON CON IL NUOVO STATO DELLA HASHTABLE */
@@ -62,5 +66,21 @@ public class RegisterServiceImpl implements RegisterService{
     /* GETTER HASHTABLE */
     public Hashtable<String, Player> getPlayers_table() {
         return players_table;
+    }
+
+    public void addwordtoplayer(String player,String word,int score){
+        players_table.get(player).getPlayedwords().add(word);
+        Gson gson=new GsonBuilder().setPrettyPrinting().create();
+        try {
+            FileOutputStream fos=new FileOutputStream(playersdata_path);
+            OutputStreamWriter ow=new OutputStreamWriter(fos);
+            String playertableString=gson.toJson(players_table);
+            ow.write(playertableString);
+            ow.flush();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
