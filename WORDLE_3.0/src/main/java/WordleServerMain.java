@@ -1,14 +1,16 @@
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+
 import java.io.*;
+import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Properties;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+import java.util.*;
 import java.util.concurrent.ThreadPoolExecutor;
 import static java.util.concurrent.Executors.newCachedThreadPool;
 
@@ -25,13 +27,26 @@ public class WordleServerMain {
 
     public static void main(String[] args) throws IOException {
 
+
+
+
+
         String configfile_path=args[0];
         StringBuilder secretword=new StringBuilder();
         ThreadPoolExecutor threadpool=(ThreadPoolExecutor) newCachedThreadPool();
-        //TODO FORSE POSSO TRASFORMARE QUESTA HASHTABLE IN UNA HASHTABLE CONTENTENTE TIPO LE STATISTICHE DI OGNI GIOCATORE METTENDO UN OGGETTO AL POSTO DI ARRAYLIST
-        Hashtable<String,ArrayList<String>> playedwords=new Hashtable<>();
+        Hashtable<String,ArrayList<String>> playedwords=new Hashtable<>();//FORSE POSSO ELIMINARE         //TODO FORSE POSSO TRASFORMARE QUESTA HASHTABLE IN UNA HASHTABLE CONTENTENTE TIPO LE STATISTICHE DI OGNI GIOCATORE METTENDO UN OGGETTO AL POSTO DI ARRAYLIST
         RegisterServiceImpl registerService=new RegisterServiceImpl(PORT_NUMBER,REGISTRY_PORT,SERVER_NAME,playedwords);//Oggetto per la registrazione degli utenti tramite RMI
 
+        /* CREO E RIEMPIO LA CLASSIFICA */
+        String ranking_path="src/main/resources/Ranking.json";
+        JsonReader reader = new JsonReader(new FileReader(ranking_path));
+        TreeSet<Player> treeSet=new Gson().fromJson(reader, new TypeToken<TreeSet<Player>>() {}.getType());
+        SortedSet<Player> ranking = Collections.synchronizedSortedSet(new TreeSet<Player>(treeSet));
+        System.out.println("WE R"+ranking);
+
+        int port=4400;
+        DatagramSocket ms=new DatagramSocket(port);
+        ms.setReuseAddress(true);
         /* CONFIGURO IL SERVER E FACCIO PARTIRE RMI PER LA REGISTRAZIONE  */
         configserver(configfile_path);
         RMI_register_start(registerService);
@@ -43,7 +58,7 @@ public class WordleServerMain {
             ArrayList<String> words = sw_manager.txt_to_list(path_to_wordsfile);
             /* STA IN ATTESA DELLE CONNESSIONI CON I CLIENT */
             while (true) {
-                threadpool.execute(new WordleClientHandler(server.accept(),registerService,secretword,playedwords,words));
+                threadpool.execute(new WordleClientHandler(server.accept(),registerService,secretword,playedwords,words,ms,ranking));
             }
         }
 

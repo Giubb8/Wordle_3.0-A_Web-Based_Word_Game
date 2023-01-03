@@ -27,6 +27,7 @@ public class RegisterServiceImpl implements RegisterService{
         /* INIZIALIZZO LA HASHTABLE PER RIPRENDERE LO STATO PRECEDENTE DAL FILE .JSON */
         JsonReader reader = new JsonReader(new FileReader(playersdata_path));
         //problemi con parsing del tipo a runtime quindi ho dovuto mettere player
+
         this.players_table= new Gson().fromJson(reader, new TypeToken<Hashtable<String, Player>>() {}.getType());
 
         /* INIZIALIZZO GLI ALTRI VALORI  */
@@ -40,6 +41,7 @@ public class RegisterServiceImpl implements RegisterService{
     /* FUNZIONE USATA PER LA REGISTRAZIONE DEGLI UTENTI  */
     public Player register_user(Player newplayer) throws RemoteException {
 
+        System.out.println();
         /* INSERISCO IL NUOVO GIOCATORE NELLA TABELLA  */
         players_table.put(newplayer.getUsername(), newplayer);
         playedwords.put(newplayer.getUsername(),new ArrayList<String>());
@@ -68,8 +70,13 @@ public class RegisterServiceImpl implements RegisterService{
         return players_table;
     }
 
-    public void addwordtoplayer(String player,String word,int score){
+    public void updateplayer(String player,String word,int score){
         players_table.get(player).getPlayedwords().add(word);
+        if(score!=0)
+            players_table.get(player).addwinnedgame(score);
+        else
+            players_table.get(player).addplayedgame(score);
+
         Gson gson=new GsonBuilder().setPrettyPrinting().create();
         try {
             FileOutputStream fos=new FileOutputStream(playersdata_path);

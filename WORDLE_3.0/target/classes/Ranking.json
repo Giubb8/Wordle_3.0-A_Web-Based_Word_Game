@@ -1,0 +1,11 @@
+[
+  {
+    "username": "Test",
+    "password": "Test",
+    "score": 0,
+    "playedwords": [],
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  }
+]

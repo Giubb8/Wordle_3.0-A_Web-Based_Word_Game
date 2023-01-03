@@ -2,9 +2,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.DatagramSocket;
 import  java.net.Socket;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /* CLASSE PER LA GESTIONE DELLA CONNESSIONE CON I CLIENT */
 public class WordleClientHandler implements  Runnable{
@@ -16,16 +19,16 @@ public class WordleClientHandler implements  Runnable{
     private final StringBuilder secretword;
     private Hashtable<String, ArrayList<String>> playedwords;
     private ArrayList<String> words;
-
-    public WordleClientHandler(Socket clientSocket, RegisterServiceImpl registerService,StringBuilder secretword,Hashtable<String, ArrayList<String>> playedwords,ArrayList<String> words) throws IOException {
+    private DatagramSocket ms;
+    public WordleClientHandler(Socket clientSocket, RegisterServiceImpl registerService, StringBuilder secretword, Hashtable<String, ArrayList<String>> playedwords, ArrayList<String> words, DatagramSocket ms, SortedSet<Player> ranking) throws IOException {
         this.client=clientSocket;
         this.secretword=secretword;
         in=new BufferedReader(new InputStreamReader(client.getInputStream()));
         out=new PrintWriter(client.getOutputStream(),true);
         this.playedwords=playedwords;
         this.words=words;
-        wordleService=new WordleService(registerService,secretword,playedwords,words);
-
+        this.ms=ms;
+        wordleService=new WordleService(registerService,secretword,playedwords,words,ms,ranking);
     }
 
     /* METODO PER LA LETTURA SAFE DEGLI INPUT DA PARTE DEL CLIENT */
@@ -52,6 +55,8 @@ public class WordleClientHandler implements  Runnable{
                     case "login" -> is_over = wordleService.login(in, out);
                     case "logout" -> is_over = wordleService.logout();
                     case "playwordle" ->is_over=wordleService.playwordle(secretword,in,out);
+                    case "share" -> is_over=wordleService.share(out);
+                    case "statistics" -> is_over=wordleService.sendstats(in,out);
                     default -> {
                         is_over = 1;
                         System.out.println("Comunicazione Terminata");

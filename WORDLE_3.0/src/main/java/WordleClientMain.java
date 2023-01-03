@@ -1,5 +1,7 @@
 import java.io.*;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Scanner;
 import java.rmi.*;
@@ -16,17 +18,22 @@ public class WordleClientMain {
     final private static String USERNAMENOTEXIST="ERR_UNAME_NOT_EXIST";
     final private static String PASSWORDNOMATCH="ERR_PASSWORD_NOT_MATCHING";
     final private static String WORD_NOT_EXISTS="WORD_NOT_EXISTS";
+    private static int MULTICASTPORT=0;
     final private static int ERROR_CODE=13001;
     final private static int WRONG_WORD=15001;
     public static final String ANSI_RESET = "\u001B[0m";
-
     final private static int OK_CODE=12002;
+    private static int gameplayed=0;
+
+
     public static void main(String[] args) throws IOException {
+
         /* CONFIGURAZIONE INIZIALE DEL CLIENT */
         String configfile_path=args[0];
         int initial_choice;
         int is_over=0;
         configclient(configfile_path);
+        ArrayList<String> notification=new ArrayList<>(); //Lista contenente le notifiche da segnalare al client
 
         /*CREAZIONE DELLA SOCKET E DEGLI STREAM PER EFFETTUARE LA CONNESSIONE */
         BufferedReader input;
@@ -41,18 +48,17 @@ public class WordleClientMain {
         initial_choice=stdin.nextInt();
 
         /* SCELTA TRA LOGIN,REGISTRAZIONE E SPIEGAZIONE  */
-        //ovviamente da cambiare
         switch (initial_choice){
             case 1 -> {
                 register();
                 String login="login";
                 output.println(login);
-                login(input,output);
+                login(input,output,notification);
             }
             case 2 -> {
                 String login="login";
                 output.println(login);//QUI
-                login(input,output);
+                login(input,output,notification);
                 System.out.println("uscito dal login client");
             }
             default -> System.out.println("SPIEGAZIONE");
@@ -60,9 +66,8 @@ public class WordleClientMain {
 
         /* MAIN LOOP DEL CLIENT FINO A QUANDO NON EFFETTUO IL LOGOUT O INTERROMPO PRENDO COMANDI */
         while(is_over==0) {
-            System.out.println("OPZIONI DISPONIBILI:\n"+"1)PlayWordle\n"+"2)Logout");
+            System.out.println("OPZIONI DISPONIBILI:\n"+"1)PlayWordle\n"+"2)Logout\n"+"3)Mostra Notifiche\n"+"4)Condividi Risultato\n"+"5)Mostra Statistiche");
             int command=stdin.nextInt();
-            System.out.println("ricevuto "+command);
             switch (command){
                 case 1 :{
                     output.println("playwordle");//segnalo al server che voglio giocare
@@ -73,6 +78,18 @@ public class WordleClientMain {
                     output.println("logout");
                     logout();
                     is_over=1;
+                    break;
+                }
+                case 3:{
+                    showMeSharing(notification);
+                    break;
+                }
+                case 4:{
+                    share(input,output);
+                    break;
+                }
+                case 5:{
+                    showstats(input,output);
                     break;
                 }
                 default : {
@@ -86,29 +103,70 @@ public class WordleClientMain {
 
     }
 
+    private static void showstats(BufferedReader input, PrintWriter output) throws IOException {
+        output.println("statistics");
+        String stats=input.readLine();
+        while(stats !=null){
+            System.out.println("Statistiche Ricevute:\n"+stats);
+            stats=input.readLine();
+            if(stats.equals(""))
+                break;
+        }
+        System.out.println("fuori dal while stats");
+    }
+
+
+    /* METODO PER LA CONDIVISIONE DELL'ULTIMA PARTITA */
+    private static void share(BufferedReader input, PrintWriter output) throws IOException {
+
+        if(gameplayed>0){// controllo se l'utente abbia gia' giocato o meno
+            output.println("share");
+            int ret=Integer.parseInt(input.readLine());
+            if(ret!=OK_CODE){
+                System.out.println("Impossibile Condividere il risultato");
+            }
+            else
+                System.out.println("Risultato Condiviso");
+        }
+        else{
+            System.out.println("Ancora niente da condividere");
+        }
+
+    }
+
+
+    /* METODO PER LA VISUALIZZAZIONE DELLE NOTIFICHE RICEVUTE */
+    private static void showMeSharing(ArrayList<String> notification) {
+        System.out.println("Ricevute le seguenti notifiche:");
+        for(String string: notification){
+            System.out.println(string);
+        }
+    }
+
+
+    /* METODO PER GIOCARE A WORDLE */
     private static void playwordle(BufferedReader input, PrintWriter output) throws IOException {
-        System.out.println("Sto giocando");
         String secretword;
         Scanner stdin=new Scanner(System.in);
+        int tries=0;
         output.flush();
 
-        /* CONTROLLO CHE L'UTENTE NON ABBIA GIA GIOCATO QUESTA PAROLA */
+        /* CONTROLLO CHE L'UTENTE NON ABBIA GIA GIOCATO QUESTA PAROLA E GESTISCO L'ERRORE */
         int response=Integer.parseInt( input.readLine());
         System.out.println("respone ricevuto: "+response);
-
-
         if(response==ERROR_CODE){
             /*gestione dell'errore*/
             System.out.println("Hai gia effettuato il tuo tentativo per questa parola");
             return;
         }
-        //ALTRIMENTI SE TUTTO OK
-        /* RICEVO LA PAROLA SEGRETA DAL SERVER */
+        /* SE UTENTE NON HA GIOCATO LA PAROLA RICEVO LA PAROLA SEGRETA DAL SERVER */
         secretword= input.readLine();
         System.out.println("parola segreta ricevuta "+secretword);
-        int tries=0;
         System.out.println("Effettua il tentativo per indovinare :");
-        while(tries<3){//TODO CONTROLLARE SE CONDIZIONE VA BENE E CAMBIARE IL NUMERO DI TENTATIVI
+
+        /* LOOP PER EFFETTUARE I TENTATIVI  */
+        while(tries<3){//TODO CAMBIARE I NUMERI DI TENTATIVI
+
             /* UTENTE SCRIVE NUOVA PAROLA */
             String guess=stdin.nextLine();
 
@@ -128,15 +186,15 @@ public class WordleClientMain {
                     int score=tries+1;
                     System.out.println("Hai indovinato la parola in "+score+" tentativi");
                     output.println(score);
-
                     break;
                 }
                 else {
                     /* ALTRIMENTI SE LA PAROLA NON E STATA INDOVINATA */
-                    tries++;//TODO QUESTO VA INSCATOLATO
+                    tries++;
                     if(tries==3){/* SE HO FINITO I TENTATIVI */
                         output.println(ERROR_CODE);
-                    }else{ /* SE LA PAROLA E' SBAGLIATA */
+                    }
+                    else { /* SE LA PAROLA E' SBAGLIATA */
                         output.println(WRONG_WORD);
                     }
                 }
@@ -144,14 +202,16 @@ public class WordleClientMain {
             }
 
         }
-        System.out.println(ANSI_RESET+"Ho finito i tentativi");
+        System.out.println(ANSI_RESET+"Gioco Concluso");
+        /* RICEVO LA TRADUZIONE DELLA PAROLA DA PARTE DEL SERVER */
         String traduzione;
         traduzione=input.readLine();
         System.out.println("Parola segreta: "+secretword+" Traduzione: "+traduzione);
+        gameplayed++;
     }
 
 
-
+    /* METODO PER INVIARE IL GUESS AL SERVER */
     static public StringBuilder sendWord(String guess,BufferedReader input, PrintWriter output) throws IOException {
         output.println(guess);
         StringBuilder retstring= new StringBuilder(input.readLine());
@@ -168,21 +228,23 @@ public class WordleClientMain {
         Scanner stdin = new Scanner(System.in);
         RegisterService serverObject;
         Remote RemoteObject;
+
         /* PRENDO I DATI PER LA REGISTRAZIONE */
         System.out.println("Fase di registrazione:\n"+"Username:");
         String username=stdin.next();
         System.out.println("Password:");
         String password=stdin.next();
+
         /* CREO UN NUOVO GIOCATORE */
         Player player=new Player(username,password,0);
 
         /* TROVO L'OGGETTO REMOTO CON IL REGISTRY ED ESEGUO IL SUO METODO PER LA REGISTRAZIONE */
         try {
-            Registry r = LocateRegistry.getRegistry(REGISTRY_PORT);
+            Registry r = LocateRegistry.getRegistry(REGISTRY_PORT);//trovo il registry
             RemoteObject = r.lookup(SERVER_NAME);
-            serverObject = (RegisterService) RemoteObject;
-            Player testplayer=serverObject.register_user(player);
-            System.out.println("PLAYER RITORNATO:"+testplayer.toString());
+            serverObject = (RegisterService) RemoteObject;//ottengo lo stub
+            Player testplayer=serverObject.register_user(player);// effettuo la registrazione dell'utente con il metodo remoto
+            //System.out.println("PLAYER RITORNATO:"+testplayer.toString());
         }
         catch (Exception e) {
             System.out.println("Error in invoking object method " + e + e.getMessage());e.printStackTrace();
@@ -190,7 +252,7 @@ public class WordleClientMain {
     }
 
     /*METODO PER IL LOGIN DEL CLIENT */
-    static public void login(BufferedReader input,PrintWriter output) throws IOException {
+    static public void login(BufferedReader input,PrintWriter output,ArrayList<String> notification) throws IOException {
         Scanner stdin = new Scanner(System.in);
 
         /* PRENDO I DATI PER EFFETTUARE IL LOGIN */
@@ -207,17 +269,21 @@ public class WordleClientMain {
         String result=input.readLine();
         if(result.equals(USERNAMENOTEXIST)){
             System.out.println("Username non registrato");
-            login(input, output);
+            login(input, output,notification);
         }
-        System.out.println("Username "+username+"trovato");
+        //System.out.println("Username "+username+"trovato");
 
         /*EFFETTUO IL CONTROLLO SULLA PASSWORD */
         String result2=input.readLine();
         if(result2.equals(PASSWORDNOMATCH)){
             System.out.println("Password non corrisponde");
-            login(input, output);
+            login(input, output,notification);
         }
 
+        /* FACCIO PARTIRE IL THREAD PER LA RICEZIONE DELLE NOTIFICHE */
+        MulticastNotificationService notificationService=new MulticastNotificationService(MULTICASTPORT,notification);
+        Thread notificationthread=new Thread(notificationService);
+        notificationthread.start();
 
     }
 
@@ -229,6 +295,7 @@ public class WordleClientMain {
             PORT_NUMBER=Integer.parseInt(prop.getProperty("port_number"));
             REGISTRY_PORT=Integer.parseInt(prop.getProperty("registry_port"));
             SERVER_NAME=prop.getProperty("server_name");
+            MULTICASTPORT= Integer.parseInt(prop.getProperty("multicastport"));
             System.out.println("PORT_NUMBER:"+PORT_NUMBER+"\nREGISTRY_PORT:"+REGISTRY_PORT+"\nSERVER_NAME:"+SERVER_NAME); // stampo il valore delle proprieta
         } catch (IOException ex) {
             ex.printStackTrace();

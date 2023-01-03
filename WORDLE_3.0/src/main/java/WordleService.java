@@ -2,10 +2,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -26,6 +27,9 @@ public class WordleService {
     final private static int OK=0;
 
     /* STRUTTURE DI SUPPORTO */
+    private InetAddress multicast_group=null;
+    private int multicastport;
+    private DatagramSocket ms;
     private final Hashtable<String,Player> players_table;
     private final StringBuilder secretword;
     private ArrayList<String> played_words;
@@ -41,14 +45,24 @@ public class WordleService {
     public static final String ANSI_GREEN_BACKGROUND = "\u001B[42m";
     public static final String ANSI_YELLOW_BACKGROUND = "\u001B[43m";
 
-
-    public WordleService(RegisterServiceImpl registerService,StringBuilder secretword,Hashtable<String, ArrayList<String>> playedwords,ArrayList<String> words){
+    public String s_username;
+    public String s_secretword;
+    public int s_score;
+    SortedSet<Player> ranking;
+    public WordleService(RegisterServiceImpl registerService, StringBuilder secretword, Hashtable<String, ArrayList<String>> playedwords, ArrayList<String> words, DatagramSocket ms, SortedSet<Player> ranking) throws UnknownHostException, SocketException {
         this.players_table=registerService.getPlayers_table();
         this.registerService=registerService;
         this.secretword=secretword;
         played_words=new ArrayList<String>();
         this.playedwords=playedwords;
         this.words=words;
+        this.multicast_group=InetAddress.getByName("228.5.6.7");
+        this.multicastport=4400;
+        this.ms=ms;
+        this.ranking=ranking;
+        //ms.setReuseAddress(true);
+       // System.out.println("reuse ?"+ms.getReuseAddress());
+
     }
 
     /* METODO PER EFFETTUARE IL LOGIN DA PARTE DELL'UTENTE */
@@ -168,15 +182,39 @@ public class WordleService {
         if(client_response!=ERROR_CODE && client_response!=WRONG_WORD)
              score=(client_response*-1)+4;
         System.out.println("score: "+score);
-        registerService.addwordtoplayer(session_username,current_secretword,score);
-
+        Player prev;
+        prev=players_table.get(session_username);
+        if(ranking.contains(prev)){
+            ranking.remove(prev);
+        }
+        registerService.updateplayer(session_username,current_secretword,score);
+        ranking.add(players_table.get(session_username));
+        System.out.println("RANKING: "+ranking);
         String traduzione=translateWords(current_secretword);
         System.out.println("traduzione: "+traduzione);
         out.println(traduzione);
+
+        s_username=session_username;
+        s_secretword=current_secretword;
+        s_score=score;
+
+
         return OK;
 
     }
 
+    public  int share(PrintWriter out) throws IOException {
+        byte[] data;
+        String tosend=""+s_username+" for "+s_secretword+"scored:"+s_score;
+        data=tosend.getBytes();
+        DatagramPacket dp=new DatagramPacket(data,data.length,multicast_group,multicastport);
+        ms.send(dp);
+        out.println(OK_CODE);
+        s_score=0;
+        s_username=null;
+        s_secretword=null;
+        return 0;
+    }
     public static String translateWords(String word) throws IOException {
         //Richiedo all'url la parola
         URL url1 = new URL("https://api.mymemory.translated.net/get?q=" + word + "&langpair=en|it");
@@ -217,5 +255,13 @@ public class WordleService {
             mue.printStackTrace(System.err);
         }
         return stampa1;
+    }
+
+    public int sendstats(BufferedReader in, PrintWriter out) {
+        int ret=0;
+        String stat=this.players_table.get(session_username).toString();
+        System.out.println("STATISTICHE\n"+stat);
+        out.println(this.players_table.get(session_username));
+        return ret;
     }
 }

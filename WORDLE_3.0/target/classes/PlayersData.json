@@ -29,19 +29,20 @@
     "password": "ag",
     "record": 0
   },
+  "af": {
+    "username": "af",
+    "password": "af",
+    "record": 0
+  },
   "pp": {
     "username": "pp",
     "password": "pp",
     "record": 0,
     "playedwords": [
       "extinguish",
-      "dynastinae"
+      "dynastinae",
+      "suppletion"
     ]
-  },
-  "af": {
-    "username": "af",
-    "password": "af",
-    "record": 0
   },
   "ad": {
     "username": "ad",
@@ -183,14 +184,14 @@
     "password": "lol",
     "record": 0
   },
-  "hh": {
-    "username": "hh",
-    "password": "hh",
-    "record": 0
-  },
   "termos": {
     "username": "termos",
     "password": "termos",
+    "record": 0
+  },
+  "hh": {
+    "username": "hh",
+    "password": "hh",
     "record": 0
   },
   "bb": {
