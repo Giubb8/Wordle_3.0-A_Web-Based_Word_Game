@@ -1,9 +1,10 @@
 import java.io.*;
 import java.net.*;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.SortedSet;
-import java.util.TreeSet;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -48,7 +49,8 @@ public class WordleService {
     public String s_secretword;
     public int s_score;
     SortedSet<Player> ranking;
-    public WordleService(RegisterServiceImpl registerService, StringBuilder secretword, Hashtable<String, ArrayList<String>> playedwords, ArrayList<String> words, DatagramSocket ms, SortedSet<Player> ranking) throws UnknownHostException, SocketException {
+    ServerCallBackImpl callback;
+    public WordleService(RegisterServiceImpl registerService, StringBuilder secretword, Hashtable<String, ArrayList<String>> playedwords, ArrayList<String> words, DatagramSocket ms, SortedSet<Player> ranking, ServerCallBackImpl callback) throws UnknownHostException, SocketException {
         this.players_table=registerService.getPlayers_table();
         this.registerService=registerService;
         this.secretword=secretword;
@@ -59,7 +61,8 @@ public class WordleService {
         this.multicastport=4400;
         this.ms=ms;
         this.ranking=ranking;
-        System.out.println(ranking);
+        this.callback=callback;
+        //System.out.println(ranking);
         //ms.setReuseAddress(true);
        // System.out.println("reuse ?"+ms.getReuseAddress());
 
@@ -176,20 +179,52 @@ public class WordleService {
                 client_finished=1;
 
         }
-        /* TODO GESTIONE DEL RISULTATO DEL CLIENT TIPO VA MESSO IN CLASSIFICA E AGGORNATA  */
-        /* TODO IL RISULATO DELLA PARTITA LO PRENDO DA CLIENT RESPONSE DI SOPRA E CONTROLLARE CHE SIA DIVERSO DA ERROR CODE E WRONG WORD */
         int score=0;
         if(client_response!=ERROR_CODE && client_response!=WRONG_WORD)
              score=(client_response*-1)+4;
         System.out.println("score: "+score);
         /*TODO BLOCCO DA INCLUDERE IN UNA FUNZIONE PERCHE COSI FA SCHIFO */
+        updateranking(session_username,current_secretword,ranking,score,callback);
+
+        //System.out.println("RANKING: "+ranking);
+
+        String traduzione=translateWords(current_secretword);
+        System.out.println("traduzione: "+traduzione);
+        out.println(traduzione);
+
+        s_username=session_username;
+        s_secretword=current_secretword;
+        s_score=score;
+
+
+        return OK;
+
+    }
+
+    private void updateranking(String session_username, String current_secretword, SortedSet<Player> ranking, int score, ServerCallBackImpl callback) throws RemoteException {
         Player prev;
         prev=players_table.get(session_username);
+
         if(ranking.contains(prev)){
+            System.out.println("ranking contains player");
             ranking.remove(prev);
         }
+       /* Iterator iteratore=ranking.iterator();
+        while(iteratore.hasNext()){
+            Player player= (Player) iteratore.next();
+            if (player.getUsername().equals(session_username)){
+                System.out.println("TROVATO cont"+ranking.contains(player));
+                ranking.remove(player);
+                System.out.println("player rimosso");
+            }
+        }*/
+        System.out.println("-------------------------------------------");
+        System.out.println(""+ranking);
+        System.out.println("-------------------------------------------");
+
         registerService.updateplayer(session_username,current_secretword,score);
         ranking.add(players_table.get(session_username));
+        System.out.println("ranking "+ranking);
         String ranking_path="src/main/resources/Ranking.json";
         Gson gson=new GsonBuilder().setPrettyPrinting().create();
         try {
@@ -203,19 +238,15 @@ public class WordleService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("RANKING: "+ranking);
-
-        String traduzione=translateWords(current_secretword);
-        System.out.println("traduzione: "+traduzione);
-        out.println(traduzione);
-
-        s_username=session_username;
-        s_secretword=current_secretword;
-        s_score=score;
-
-
-        return OK;
-
+        /*inserire che se e tra le prime tre posizioni allora invio una callback*/
+        Iterator iterator=ranking.iterator();
+        int i=1;
+        while(iterator.hasNext() && i<=3){
+            Player player=players_table.get(session_username);
+            if( (iterator.next().equals(player)) )
+                callback.update(session_username+" è in "+i+"a posizione con "+player.getScore()+"punti");
+            i++;
+        }
     }
 
     public  int share(PrintWriter out) throws IOException {

@@ -1,6 +1,6 @@
 import java.io.*;
-import java.net.InetAddress;
 import java.net.Socket;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Scanner;
@@ -26,7 +26,7 @@ public class WordleClientMain {
     private static int gameplayed=0;
 
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, NotBoundException {
 
         /* CONFIGURAZIONE INIZIALE DEL CLIENT */
         String configfile_path=args[0];
@@ -34,7 +34,7 @@ public class WordleClientMain {
         int is_over=0;
         configclient(configfile_path);
         ArrayList<String> notification=new ArrayList<>(); //Lista contenente le notifiche da segnalare al client
-
+        ArrayList<String> rank_update=new ArrayList<>();
         /*CREAZIONE DELLA SOCKET E DEGLI STREAM PER EFFETTUARE LA CONNESSIONE */
         BufferedReader input;
         PrintWriter output;
@@ -42,6 +42,8 @@ public class WordleClientMain {
         input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         output = new PrintWriter(socket.getOutputStream(), true);
 
+        /* MI REGISTRO PER LE CALLBACK */
+        handlecallback(rank_update);
         /* FASE DI BENVENUTO E SELEZIONE OPZIONE  */
         System.out.println("Benvenuto in Wordle 3.0\n"+"1) Registrazione\n"+"2) Login\n"+"3) Spiegazione Gioco");
         Scanner stdin = new Scanner(System.in);
@@ -100,6 +102,21 @@ public class WordleClientMain {
             }
         }
 
+
+    }
+
+    private static void handlecallback(ArrayList<String> rank_update) throws RemoteException, NotBoundException {
+        Registry registry = LocateRegistry.getRegistry(5000);
+        String name = "Server";
+        ServerCallBackInterface server = (ServerCallBackInterface) registry.lookup(name);
+        /* si registra per la callback */
+        System.out.println("Registering for callback");
+        ClientCallBackInterface callbackObj = new ClientCallBackImpl();
+        System.out.println("dopo creazione callbackObj");
+        ClientCallBackInterface stub = (ClientCallBackInterface) UnicastRemoteObject.exportObject(callbackObj, 0);
+        System.out.println("dopo creazione stub");
+        server.registerForCallback(stub);
+        System.out.println("dopo chiamata funzione");
 
     }
 

@@ -23,6 +23,20 @@
     "average_score": 0,
     "playedgame": 0
   },
+  "pesce": {
+    "username": "pesce",
+    "password": "pesce",
+    "score": 12,
+    "playedwords": [
+      "unsoothing",
+      "housemaidy",
+      "semiclosed",
+      "luciferian"
+    ],
+    "winnedgame": 4,
+    "average_score": 3,
+    "playedgame": 4
+  },
   "as": {
     "username": "as",
     "password": "as",
@@ -38,6 +52,20 @@
     "winnedgame": 0,
     "average_score": 0,
     "playedgame": 0
+  },
+  "gatto": {
+    "username": "gatto",
+    "password": "gatto",
+    "score": 12,
+    "playedwords": [
+      "partialism",
+      "monotocous",
+      "mythogonic",
+      "uncreating"
+    ],
+    "winnedgame": 4,
+    "average_score": 3,
+    "playedgame": 4
   },
   "ag": {
     "username": "ag",
@@ -58,18 +86,20 @@
   "pp": {
     "username": "pp",
     "password": "pp",
-    "score": 9,
+    "score": 15,
     "playedwords": [
       "extinguish",
       "dynastinae",
       "suppletion",
       "questingly",
       "generalism",
-      "squareface"
+      "squareface",
+      "dodecanoic",
+      "macaronism"
     ],
-    "winnedgame": 3,
+    "winnedgame": 5,
     "average_score": 3,
-    "playedgame": 3
+    "playedgame": 5
   },
   "ad": {
     "username": "ad",
@@ -127,6 +157,20 @@
     "average_score": 0,
     "playedgame": 0
   },
+  "totto": {
+    "username": "totto",
+    "password": "totto",
+    "score": 3,
+    "playedwords": [
+      "tetrapanax",
+      "polygenist",
+      "diaglyphic",
+      "chlorinate"
+    ],
+    "winnedgame": 3,
+    "average_score": 1,
+    "playedgame": 4
+  },
   "nuovo": {
     "username": "nuovo",
     "password": "nuovo",
@@ -158,6 +202,21 @@
     "winnedgame": 0,
     "average_score": 0,
     "playedgame": 0
+  },
+  "cane": {
+    "username": "cane",
+    "password": "cane",
+    "score": 15,
+    "playedwords": [
+      "unfeedable",
+      "scorzonera",
+      "lymphaemia",
+      "upbrighten",
+      "overawning"
+    ],
+    "winnedgame": 5,
+    "average_score": 3,
+    "playedgame": 5
   },
   "panzo": {
     "username": "panzo",
@@ -247,17 +306,17 @@
     "average_score": 0,
     "playedgame": 0
   },
-  "pepe": {
-    "username": "pepe",
-    "password": "pepe",
+  "sale": {
+    "username": "sale",
+    "password": "sale",
     "score": 0,
     "winnedgame": 0,
     "average_score": 0,
     "playedgame": 0
   },
-  "sale": {
-    "username": "sale",
-    "password": "sale",
+  "pepe": {
+    "username": "pepe",
+    "password": "pepe",
     "score": 0,
     "winnedgame": 0,
     "average_score": 0,
@@ -274,21 +333,33 @@
     "average_score": 1,
     "playedgame": 1
   },
-  "lopo": {
-    "username": "lopo",
-    "password": "lopo",
-    "score": 2,
+  "polo": {
+    "username": "polo",
+    "password": "polo",
+    "score": 8,
     "playedwords": [
-      "salmonlike"
+      "consolable",
+      "pentastich",
+      "industrial",
+      "indigenity"
     ],
-    "winnedgame": 1,
+    "winnedgame": 4,
     "average_score": 2,
-    "playedgame": 1
+    "playedgame": 4
   },
   "prova": {
     "username": "prova",
     "password": "prova",
     "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "lopo": {
+    "username": "lopo",
+    "password": "lopo",
+    "score": 0,
+    "playedwords": [],
     "winnedgame": 0,
     "average_score": 0,
     "playedgame": 0
@@ -317,17 +388,17 @@
     "average_score": 0,
     "playedgame": 0
   },
-  "hh": {
-    "username": "hh",
-    "password": "hh",
+  "termos": {
+    "username": "termos",
+    "password": "termos",
     "score": 0,
     "winnedgame": 0,
     "average_score": 0,
     "playedgame": 0
   },
-  "termos": {
-    "username": "termos",
-    "password": "termos",
+  "hh": {
+    "username": "hh",
+    "password": "hh",
     "score": 0,
     "winnedgame": 0,
     "average_score": 0,
@@ -340,5 +411,16 @@
     "winnedgame": 0,
     "average_score": 0,
     "playedgame": 0
+  },
+  "pollo": {
+    "username": "pollo",
+    "password": "pollo",
+    "score": 3,
+    "playedwords": [
+      "insertable"
+    ],
+    "winnedgame": 1,
+    "average_score": 3,
+    "playedgame": 1
   }
 }

@@ -4,10 +4,10 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.DatagramSocket;
 import  java.net.Socket;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.SortedSet;
-import java.util.TreeSet;
 
 /* CLASSE PER LA GESTIONE DELLA CONNESSIONE CON I CLIENT */
 public class WordleClientHandler implements  Runnable{
@@ -20,7 +20,8 @@ public class WordleClientHandler implements  Runnable{
     private Hashtable<String, ArrayList<String>> playedwords;
     private ArrayList<String> words;
     private DatagramSocket ms;
-    public WordleClientHandler(Socket clientSocket, RegisterServiceImpl registerService, StringBuilder secretword, Hashtable<String, ArrayList<String>> playedwords, ArrayList<String> words, DatagramSocket ms, SortedSet<Player> ranking) throws IOException {
+    ServerCallBackImpl callback;
+    public WordleClientHandler(Socket clientSocket, RegisterServiceImpl registerService, StringBuilder secretword, Hashtable<String, ArrayList<String>> playedwords, ArrayList<String> words, DatagramSocket ms, SortedSet<Player> ranking, ServerCallBackImpl callback) throws IOException {
         this.client=clientSocket;
         this.secretword=secretword;
         in=new BufferedReader(new InputStreamReader(client.getInputStream()));
@@ -28,7 +29,8 @@ public class WordleClientHandler implements  Runnable{
         this.playedwords=playedwords;
         this.words=words;
         this.ms=ms;
-        wordleService=new WordleService(registerService,secretword,playedwords,words,ms,ranking);
+        this.callback=callback;
+        wordleService=new WordleService(registerService,secretword,playedwords,words,ms,ranking,callback);
     }
 
     /* METODO PER LA LETTURA SAFE DEGLI INPUT DA PARTE DEL CLIENT */
@@ -43,6 +45,7 @@ public class WordleClientHandler implements  Runnable{
     /* METODO ESEGUITO DALLA THREADPOOL */
     public void run() {
         int is_over=0;
+
         /* ACCETTO INPUT FINO A QUANDO L'UTENTE NON DECIDE DI DISCONNETTERSI E GESTISCO LE SINGOLE RICHIESTE */
         while(is_over==0){
             System.out.println("ciclo while handler");

@@ -6,6 +6,7 @@ import com.google.gson.stream.JsonReader;
 import java.io.*;
 import java.net.DatagramSocket;
 import java.net.ServerSocket;
+import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -25,7 +26,7 @@ public class WordleServerMain {
     public static String SERVER_NAME;
     public static final String path_to_wordsfile="src/main/resources/words.txt";
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, AlreadyBoundException {
 
 
 
@@ -40,9 +41,11 @@ public class WordleServerMain {
         /* CREO E RIEMPIO LA CLASSIFICA */
         String ranking_path="src/main/resources/Ranking.json";
         JsonReader reader = new JsonReader(new FileReader(ranking_path));
+        PlayerRankingComparator comparator=new PlayerRankingComparator();
         TreeSet<Player> treeSet=new Gson().fromJson(reader, new TypeToken<TreeSet<Player>>() {}.getType());
-        SortedSet<Player> ranking = Collections.synchronizedSortedSet(new TreeSet<Player>(treeSet));
-        System.out.println("WE R"+ranking);
+        SortedSet<Player> ranking = Collections.synchronizedSortedSet(new TreeSet<Player>(comparator));
+        ranking.addAll(treeSet);
+        //System.out.println("WE R"+ranking);
 
         int port=4400;
         DatagramSocket ms=new DatagramSocket(port);
@@ -50,6 +53,8 @@ public class WordleServerMain {
         /* CONFIGURO IL SERVER E FACCIO PARTIRE RMI PER LA REGISTRAZIONE  */
         configserver(configfile_path);
         RMI_register_start(registerService);
+        ServerCallBackImpl callback=handlecallback();
+        //callback.update("Ciao sono callback");
         try (ServerSocket server = new ServerSocket(PORT_NUMBER)) {
 
             /* CREO E AVVIO IL MANAGER PER LA PAROLA SEGRETA */
@@ -58,11 +63,21 @@ public class WordleServerMain {
             ArrayList<String> words = sw_manager.txt_to_list(path_to_wordsfile);
             /* STA IN ATTESA DELLE CONNESSIONI CON I CLIENT */
             while (true) {
-                threadpool.execute(new WordleClientHandler(server.accept(),registerService,secretword,playedwords,words,ms,ranking));
+                threadpool.execute(new WordleClientHandler(server.accept(),registerService,secretword,playedwords,words,ms,ranking,callback));
             }
         }
 
 
+    }
+
+    private static ServerCallBackImpl handlecallback() throws RemoteException, AlreadyBoundException {
+        ServerCallBackImpl server = new ServerCallBackImpl( );
+        ServerCallBackInterface stub=(ServerCallBackInterface) UnicastRemoteObject.exportObject (server,39000);
+        String name = "Server";
+        LocateRegistry.createRegistry(5000);
+        Registry registry=LocateRegistry.getRegistry(5000);
+        registry.bind(name, stub);
+        return server;
     }
 
     /* FUNZIONE PER LA CONFIGURAZIONE INIZIALE DEL SERVER */

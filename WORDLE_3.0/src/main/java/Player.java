@@ -56,7 +56,10 @@ public class Player implements Serializable,Comparable<Player> {
 
 
     public int compareTo(Player player) {
-        return this.score > player.getScore() ? -1 : this.score < player.getScore() ? 1 : 0;
+        if(this.equals(player))
+            return 0;
+        else return -1;
     }
+
 }
 
