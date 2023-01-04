@@ -2,201 +2,343 @@
   "Milo": {
     "username": "Milo",
     "password": "Manara",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
   "provawe": {
     "username": "provawe",
     "password": "dsd",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
   "maizena": {
     "username": "maizena",
     "password": "maizena",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
   "as": {
     "username": "as",
     "password": "as",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
   "test": {
     "username": "test",
     "password": "bello",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
   "ag": {
     "username": "ag",
     "password": "ag",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
   "af": {
     "username": "af",
     "password": "af",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
   "pp": {
     "username": "pp",
     "password": "pp",
-    "record": 0,
+    "score": 9,
     "playedwords": [
       "extinguish",
       "dynastinae",
-      "suppletion"
-    ]
+      "suppletion",
+      "questingly",
+      "generalism",
+      "squareface"
+    ],
+    "winnedgame": 3,
+    "average_score": 3,
+    "playedgame": 3
   },
   "ad": {
     "username": "ad",
     "password": "ad",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
   "df": {
     "username": "df",
     "password": "df",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
   "jj": {
     "username": "jj",
     "password": "jj",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
   "Andrea": {
     "username": "Andrea",
     "password": "Carollo",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
   "ac": {
     "username": "ac",
     "password": "ac",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
   "aa": {
     "username": "aa",
     "password": "aa",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
   "Amico": {
     "username": "Amico",
     "password": "Fritzi",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
   "nuovo": {
     "username": "nuovo",
     "password": "nuovo",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
   "pwpw": {
     "username": "pwpw",
     "password": "pwpw",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
   "popo": {
     "username": "popo",
     "password": "popo",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
   "terno": {
     "username": "terno",
     "password": "terno",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
   "panzo": {
     "username": "panzo",
     "password": "panza",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
   "qwqw": {
     "username": "qwqw",
     "password": "qwqw",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
   "Scemo": {
     "username": "Scemo",
     "password": "Forte",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
   "Prova": {
     "username": "Prova",
     "password": "Prova",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
   "Ciao": {
     "username": "Ciao",
     "password": "duemilaventi",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
   "Paperella": {
     "username": "Paperella",
     "password": "Interessante",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
   "gerry": {
     "username": "gerry",
     "password": "scotti",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
   "us": {
     "username": "us",
     "password": "nuovo",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
   "ff": {
     "username": "ff",
     "password": "ff",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
   "Paolo": {
     "username": "Paolo",
     "password": "Palla",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
   "Penny": {
     "username": "Penny",
     "password": "Cane",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
   "pepe": {
     "username": "pepe",
     "password": "pepe",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
   "sale": {
     "username": "sale",
     "password": "sale",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "sni": {
+    "username": "sni",
+    "password": "sni",
+    "score": 1,
+    "playedwords": [
+      "solifugous"
+    ],
+    "winnedgame": 1,
+    "average_score": 1,
+    "playedgame": 1
+  },
+  "lopo": {
+    "username": "lopo",
+    "password": "lopo",
+    "score": 2,
+    "playedwords": [
+      "salmonlike"
+    ],
+    "winnedgame": 1,
+    "average_score": 2,
+    "playedgame": 1
   },
   "prova": {
     "username": "prova",
     "password": "prova",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
   "Stefania": {
     "username": "Stefania",
     "password": "Martino",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
   "Carlo": {
     "username": "Carlo",
     "password": "Conti",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
   "Sgenllo": {
     "username": "Sgenllo",
     "password": "lol",
-    "record": 0
-  },
-  "termos": {
-    "username": "termos",
-    "password": "termos",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
   "hh": {
     "username": "hh",
     "password": "hh",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "termos": {
+    "username": "termos",
+    "password": "termos",
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
   "bb": {
     "username": "bb",
     "password": "bb",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   }
 }

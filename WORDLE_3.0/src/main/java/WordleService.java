@@ -1,13 +1,12 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -60,6 +59,7 @@ public class WordleService {
         this.multicastport=4400;
         this.ms=ms;
         this.ranking=ranking;
+        System.out.println(ranking);
         //ms.setReuseAddress(true);
        // System.out.println("reuse ?"+ms.getReuseAddress());
 
@@ -182,6 +182,7 @@ public class WordleService {
         if(client_response!=ERROR_CODE && client_response!=WRONG_WORD)
              score=(client_response*-1)+4;
         System.out.println("score: "+score);
+        /*TODO BLOCCO DA INCLUDERE IN UNA FUNZIONE PERCHE COSI FA SCHIFO */
         Player prev;
         prev=players_table.get(session_username);
         if(ranking.contains(prev)){
@@ -189,7 +190,21 @@ public class WordleService {
         }
         registerService.updateplayer(session_username,current_secretword,score);
         ranking.add(players_table.get(session_username));
+        String ranking_path="src/main/resources/Ranking.json";
+        Gson gson=new GsonBuilder().setPrettyPrinting().create();
+        try {
+            FileOutputStream fos=new FileOutputStream(ranking_path);
+            OutputStreamWriter ow=new OutputStreamWriter(fos);
+            String rankingString=gson.toJson(ranking);
+            ow.write(rankingString);
+            ow.flush();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         System.out.println("RANKING: "+ranking);
+
         String traduzione=translateWords(current_secretword);
         System.out.println("traduzione: "+traduzione);
         out.println(traduzione);

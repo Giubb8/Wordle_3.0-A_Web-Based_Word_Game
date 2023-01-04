@@ -1,11 +1,40 @@
 [
   {
-    "username": "Test",
-    "password": "Test",
-    "score": 0,
-    "playedwords": [],
-    "winnedgame": 0,
-    "average_score": 0,
-    "playedgame": 0
+    "username": "pp",
+    "password": "pp",
+    "score": 9,
+    "playedwords": [
+      "extinguish",
+      "dynastinae",
+      "suppletion",
+      "questingly",
+      "generalism",
+      "squareface"
+    ],
+    "winnedgame": 3,
+    "average_score": 3,
+    "playedgame": 3
+  },
+  {
+    "username": "lopo",
+    "password": "lopo",
+    "score": 2,
+    "playedwords": [
+      "salmonlike"
+    ],
+    "winnedgame": 1,
+    "average_score": 2,
+    "playedgame": 1
+  },
+  {
+    "username": "sni",
+    "password": "sni",
+    "score": 1,
+    "playedwords": [
+      "solifugous"
+    ],
+    "winnedgame": 1,
+    "average_score": 1,
+    "playedgame": 1
   }
 ]
