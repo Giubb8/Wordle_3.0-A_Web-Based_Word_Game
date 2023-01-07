@@ -1,52 +1,492 @@
 {
-  "Penny": {
-    "username": "Penny",
-    "password": "Cane",
-    "record": 0
-  },
-  "Sgenllo": {
-    "username": "Sgenllo",
-    "password": "lol",
-    "record": 0
-  },
-  "Prova": {
-    "username": "Prova",
-    "password": "Prova",
-    "record": 0
-  },
-  "Carlo": {
-    "username": "Carlo",
-    "password": "Conti",
-    "record": 0
-  },
   "Milo": {
     "username": "Milo",
     "password": "Manara",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
-  "Amico": {
-    "username": "Amico",
-    "password": "Fritzi",
-    "record": 0
+  "provawe": {
+    "username": "provawe",
+    "password": "dsd",
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
-  "Paolo": {
-    "username": "Paolo",
-    "password": "Palla",
-    "record": 0
+  "maizena": {
+    "username": "maizena",
+    "password": "maizena",
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "pesce": {
+    "username": "pesce",
+    "password": "pesce",
+    "score": 24,
+    "playedwords": [
+      "unsoothing",
+      "housemaidy",
+      "semiclosed",
+      "luciferian",
+      "outfreeman",
+      "suicidally",
+      "geographer",
+      "silkflower"
+    ],
+    "winnedgame": 8,
+    "average_score": 3,
+    "playedgame": 8
+  },
+  "popolo": {
+    "username": "popolo",
+    "password": "popolo",
+    "score": 3,
+    "playedwords": [
+      "oncometric"
+    ],
+    "winnedgame": 1,
+    "average_score": 3,
+    "playedgame": 1
+  },
+  "as": {
+    "username": "as",
+    "password": "as",
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "test": {
+    "username": "test",
+    "password": "bello",
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "gatto": {
+    "username": "gatto",
+    "password": "gatto",
+    "score": 16,
+    "playedwords": [
+      "partialism",
+      "monotocous",
+      "mythogonic",
+      "uncreating",
+      "granulater",
+      "undramatic",
+      "tautonymic",
+      "luncheoner"
+    ],
+    "winnedgame": 8,
+    "average_score": 2,
+    "playedgame": 8
+  },
+  "ag": {
+    "username": "ag",
+    "password": "ag",
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "af": {
+    "username": "af",
+    "password": "af",
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "pp": {
+    "username": "pp",
+    "password": "pp",
+    "score": 15,
+    "playedwords": [
+      "extinguish",
+      "dynastinae",
+      "suppletion",
+      "questingly",
+      "generalism",
+      "squareface",
+      "dodecanoic",
+      "macaronism"
+    ],
+    "winnedgame": 5,
+    "average_score": 3,
+    "playedgame": 5
+  },
+  "ad": {
+    "username": "ad",
+    "password": "ad",
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "df": {
+    "username": "df",
+    "password": "df",
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "jj": {
+    "username": "jj",
+    "password": "jj",
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
   "Andrea": {
     "username": "Andrea",
     "password": "Carollo",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "ac": {
+    "username": "ac",
+    "password": "ac",
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "aa": {
+    "username": "aa",
+    "password": "aa",
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "Amico": {
+    "username": "Amico",
+    "password": "Fritzi",
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "totto": {
+    "username": "totto",
+    "password": "totto",
+    "score": 3,
+    "playedwords": [
+      "tetrapanax",
+      "polygenist",
+      "diaglyphic",
+      "chlorinate"
+    ],
+    "winnedgame": 3,
+    "average_score": 1,
+    "playedgame": 4
+  },
+  "nuovo": {
+    "username": "nuovo",
+    "password": "nuovo",
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "pwpw": {
+    "username": "pwpw",
+    "password": "pwpw",
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "popo": {
+    "username": "popo",
+    "password": "popo",
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "terno": {
+    "username": "terno",
+    "password": "terno",
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "cane": {
+    "username": "cane",
+    "password": "cane",
+    "score": 27,
+    "playedwords": [
+      "unfeedable",
+      "scorzonera",
+      "lymphaemia",
+      "upbrighten",
+      "overawning",
+      "dicephalus",
+      "notopodial",
+      "expertness",
+      "disclosure"
+    ],
+    "winnedgame": 9,
+    "average_score": 3,
+    "playedgame": 9
+  },
+  "panzo": {
+    "username": "panzo",
+    "password": "panza",
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "qwqw": {
+    "username": "qwqw",
+    "password": "qwqw",
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "Scemo": {
+    "username": "Scemo",
+    "password": "Forte",
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "Prova": {
+    "username": "Prova",
+    "password": "Prova",
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
   "Ciao": {
     "username": "Ciao",
     "password": "duemilaventi",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "fiorellino": {
+    "username": "fiorellino",
+    "password": "fiorellino",
+    "score": 3,
+    "playedwords": [
+      "cervicapra"
+    ],
+    "winnedgame": 1,
+    "average_score": 3,
+    "playedgame": 1
+  },
+  "Paperella": {
+    "username": "Paperella",
+    "password": "Interessante",
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "gerry": {
+    "username": "gerry",
+    "password": "scotti",
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "us": {
+    "username": "us",
+    "password": "nuovo",
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "jimmy": {
+    "username": "jimmy",
+    "password": "jimmy",
+    "score": 16,
+    "playedwords": [
+      "unbewrayed",
+      "templelike",
+      "unfestered",
+      "interclasp",
+      "scurviness",
+      "acetolysis",
+      "bronchioli",
+      "provitamin"
+    ],
+    "winnedgame": 8,
+    "average_score": 2,
+    "playedgame": 8
+  },
+  "ff": {
+    "username": "ff",
+    "password": "ff",
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "Penny": {
+    "username": "Penny",
+    "password": "Cane",
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "Paolo": {
+    "username": "Paolo",
+    "password": "Palla",
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "pepe": {
+    "username": "pepe",
+    "password": "pepe",
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "sale": {
+    "username": "sale",
+    "password": "sale",
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "sni": {
+    "username": "sni",
+    "password": "sni",
+    "score": 1,
+    "playedwords": [
+      "solifugous"
+    ],
+    "winnedgame": 1,
+    "average_score": 1,
+    "playedgame": 1
+  },
+  "polo": {
+    "username": "polo",
+    "password": "polo",
+    "score": 8,
+    "playedwords": [
+      "consolable",
+      "pentastich",
+      "industrial",
+      "indigenity"
+    ],
+    "winnedgame": 4,
+    "average_score": 2,
+    "playedgame": 4
+  },
+  "lopo": {
+    "username": "lopo",
+    "password": "lopo",
+    "score": 0,
+    "playedwords": [],
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "prova": {
+    "username": "prova",
+    "password": "prova",
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
   "Stefania": {
     "username": "Stefania",
     "password": "Martino",
-    "record": 0
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "Carlo": {
+    "username": "Carlo",
+    "password": "Conti",
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "Sgenllo": {
+    "username": "Sgenllo",
+    "password": "lol",
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "giacomo": {
+    "username": "giacomo",
+    "password": "giacomo",
+    "score": 12,
+    "playedwords": [
+      "nuptialize",
+      "exsiccatae",
+      "undersally",
+      "submission"
+    ],
+    "winnedgame": 4,
+    "average_score": 3,
+    "playedgame": 4
+  },
+  "hh": {
+    "username": "hh",
+    "password": "hh",
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "termos": {
+    "username": "termos",
+    "password": "termos",
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "bb": {
+    "username": "bb",
+    "password": "bb",
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "pollo": {
+    "username": "pollo",
+    "password": "pollo",
+    "score": 3,
+    "playedwords": [
+      "insertable"
+    ],
+    "winnedgame": 1,
+    "average_score": 3,
+    "playedgame": 1
   }
 }
