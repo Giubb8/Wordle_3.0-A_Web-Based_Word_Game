@@ -2,7 +2,7 @@
   {
     "username": "cane",
     "password": "cane",
-    "score": 27,
+    "score": 30,
     "playedwords": [
       "unfeedable",
       "scorzonera",
@@ -12,11 +12,12 @@
       "dicephalus",
       "notopodial",
       "expertness",
-      "disclosure"
+      "disclosure",
+      "sphenodont"
     ],
-    "winnedgame": 9,
+    "winnedgame": 10,
     "average_score": 3,
-    "playedgame": 9
+    "playedgame": 10
   },
   {
     "username": "pesce",
@@ -37,22 +38,23 @@
     "playedgame": 8
   },
   {
-    "username": "jimmy",
-    "password": "jimmy",
-    "score": 16,
+    "username": "gatto",
+    "password": "gatto",
+    "score": 18,
     "playedwords": [
-      "unbewrayed",
-      "templelike",
-      "unfestered",
-      "interclasp",
-      "scurviness",
-      "acetolysis",
-      "bronchioli",
-      "provitamin"
+      "partialism",
+      "monotocous",
+      "mythogonic",
+      "uncreating",
+      "granulater",
+      "undramatic",
+      "tautonymic",
+      "luncheoner",
+      "patagonian"
     ],
-    "winnedgame": 8,
+    "winnedgame": 9,
     "average_score": 2,
-    "playedgame": 8
+    "playedgame": 9
   },
   {
     "username": "gatto",
@@ -103,6 +105,25 @@
     "winnedgame": 4,
     "average_score": 3,
     "playedgame": 4
+  },
+  {
+    "username": "jimmy",
+    "password": "jimmy",
+    "score": 9,
+    "playedwords": [
+      "unbewrayed",
+      "templelike",
+      "unfestered",
+      "interclasp",
+      "scurviness",
+      "acetolysis",
+      "bronchioli",
+      "provitamin",
+      "juxtaposit"
+    ],
+    "winnedgame": 9,
+    "average_score": 1,
+    "playedgame": 9
   },
   {
     "username": "polo",

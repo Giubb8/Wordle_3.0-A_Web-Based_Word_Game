@@ -8,14 +8,14 @@ public class ServerCallBackImpl extends RemoteObject implements ServerCallBackIn
 
 
     private List<ClientCallBackInterface> clients;
-    /* crea un nuovo servente */
+
+
     public ServerCallBackImpl()throws RemoteException {
         super( );
         clients = new ArrayList<ClientCallBackInterface>();
     }
 
     public void registerForCallback(ClientCallBackInterface ClientInterface) throws RemoteException {
-        System.out.println("Dentroregistercallback");
         if (!clients.contains(ClientInterface)) {
             clients.add(ClientInterface);
             System.out.println("New client registered." );
@@ -31,17 +31,15 @@ public class ServerCallBackImpl extends RemoteObject implements ServerCallBackIn
         }
     }
 
-    /* notifica di una variazione di valore dell'azione
-   /* quando viene richiamato, fa il callback a tutti i client
-   registrati */
+   /* NOTIFICA DI UNA VARIAZIONE DEL VALORE,QUANDO CHIAMATO EFFETTUA CALLBACK */
     public void update(String value) throws RemoteException {
         doCallbacks(value);
     }
 
+    /* EFFETTUA LA CALLBACK */
     private synchronized void doCallbacks(String value) throws RemoteException {
         System.out.println("Starting callbacks. for"+clients.toString());
         Iterator i = clients.iterator( );
-        //int numeroClienti = clients.size( );
         while (i.hasNext()) {
             ClientCallBackInterface client = (ClientCallBackInterface) i.next();
             client.notifyEvent(value);

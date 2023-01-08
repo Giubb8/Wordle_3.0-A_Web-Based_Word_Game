@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 
+/* CLASSE PER LA GESTIONE DELLA PAROLA SEGRETA, OGNI TIME SECONDI CAMBIA LA PAROLA */
 public class SecretWordManager extends  Thread{
     private final StringBuilder secretword;
     private final String path_to_wordsfile="src/main/resources/words.txt";
@@ -24,7 +25,6 @@ public class SecretWordManager extends  Thread{
             try {Thread.sleep(time);} catch (InterruptedException e) {throw new RuntimeException(e);}
             secretword.setLength(0);
         }
-
     }
 
     /* FUNZIONE CHE TRASFORMA IL FILE WORDS IN UN ARRAYLIST (PER MOTIVI DI EFFICENZA NELL'ACCESSO ) */

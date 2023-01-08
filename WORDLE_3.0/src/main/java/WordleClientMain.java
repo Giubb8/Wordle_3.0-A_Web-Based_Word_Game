@@ -36,6 +36,7 @@ public class WordleClientMain {
         configclient(configfile_path);
         ArrayList<String> notification=new ArrayList<>(); //Lista contenente le notifiche da segnalare al client
         ArrayList<String> rank_update=new ArrayList<>();
+
         /*CREAZIONE DELLA SOCKET E DEGLI STREAM PER EFFETTUARE LA CONNESSIONE */
         BufferedReader input;
         PrintWriter output;
@@ -101,8 +102,6 @@ public class WordleClientMain {
                 default : {
                     System.out.println("Opzione non riconosciuta");
                 }
-
-
             }
         }
         main(args);
@@ -110,6 +109,7 @@ public class WordleClientMain {
 
     }
 
+    /* FUNZIONE PER RICEVERE LA CLASSIFICA */
     private static void showmeranking(BufferedReader input, PrintWriter output) throws IOException {
         output.println("showrank");
         String line;
@@ -121,21 +121,17 @@ public class WordleClientMain {
         }
     }
 
+    /* FUNZIONE PER LA GESTIONE DELLE CALLBACK */
     private static void handlecallback(ArrayList<String> rank_update) throws RemoteException, NotBoundException {
         Registry registry = LocateRegistry.getRegistry(5000);
         String name = "Server";
         ServerCallBackInterface server = (ServerCallBackInterface) registry.lookup(name);
-        /* si registra per la callback */
-        System.out.println("Registering for callback");
         ClientCallBackInterface callbackObj = new ClientCallBackImpl();
-        System.out.println("dopo creazione callbackObj");
         ClientCallBackInterface stub = (ClientCallBackInterface) UnicastRemoteObject.exportObject(callbackObj, 0);
-        System.out.println("dopo creazione stub");
         server.registerForCallback(stub);
-        System.out.println("dopo chiamata funzione");
-
     }
 
+    /* FUNZIONE PER MOSTRARE LE STATISTICHE DELL'UTENTE */
     private static void showstats(BufferedReader input, PrintWriter output) throws IOException {
         output.println("statistics");
         String stats=input.readLine();
@@ -145,13 +141,11 @@ public class WordleClientMain {
             if(stats.equals(""))
                 break;
         }
-        System.out.println("fuori dal while stats");
     }
 
 
     /* METODO PER LA CONDIVISIONE DELL'ULTIMA PARTITA */
     private static void share(BufferedReader input, PrintWriter output) throws IOException {
-
         if(gameplayed>0){// controllo se l'utente abbia gia' giocato o meno
             output.println("share");
             int ret=Integer.parseInt(input.readLine());
@@ -164,7 +158,6 @@ public class WordleClientMain {
         else{
             System.out.println("Ancora niente da condividere");
         }
-
     }
 
 
@@ -192,13 +185,14 @@ public class WordleClientMain {
             System.out.println("Hai gia effettuato il tuo tentativo per questa parola");
             return;
         }
+
         /* SE UTENTE NON HA GIOCATO LA PAROLA RICEVO LA PAROLA SEGRETA DAL SERVER */
         secretword= input.readLine();
         System.out.println("parola segreta ricevuta "+secretword);
         System.out.println("Effettua il tentativo per indovinare :");
 
         /* LOOP PER EFFETTUARE I TENTATIVI  */
-        while(tries<3){//TODO CAMBIARE I NUMERI DI TENTATIVI
+        while(tries<12){
 
             /* UTENTE SCRIVE NUOVA PAROLA */
             String guess=stdin.nextLine();
@@ -231,11 +225,10 @@ public class WordleClientMain {
                         output.println(WRONG_WORD);
                     }
                 }
-
             }
-
         }
         System.out.println(ANSI_RESET+"Gioco Concluso");
+
         /* RICEVO LA TRADUZIONE DELLA PAROLA DA PARTE DEL SERVER */
         String traduzione;
         traduzione=input.readLine();
@@ -253,8 +246,9 @@ public class WordleClientMain {
 
     /* METODO PER EFFETTUARE IL LOGOUT */
     private static void logout() {
-        System.out.println("Ho finito");
+        System.out.println("Logout effettuato");
     }
+
     /* METODO PER LA REGISTRAZIONE DI UN NUOVO GIOCATORE */
     static public void register(PrintWriter output) throws RemoteException {
         String login="login";
@@ -289,7 +283,7 @@ public class WordleClientMain {
         }
     }
 
-    /*METODO PER IL LOGIN DEL CLIENT */
+    /* METODO PER IL LOGIN DEL CLIENT */
     static public void login(BufferedReader input,PrintWriter output,ArrayList<String> notification) throws IOException {
         Scanner stdin = new Scanner(System.in);
 
@@ -309,7 +303,6 @@ public class WordleClientMain {
             System.out.println("Username non registrato");
             login(input, output,notification);
         }
-        //System.out.println("Username "+username+"trovato");
 
         /*EFFETTUO IL CONTROLLO SULLA PASSWORD */
         String result2=input.readLine();

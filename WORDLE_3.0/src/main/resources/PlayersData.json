@@ -71,7 +71,7 @@
   "gatto": {
     "username": "gatto",
     "password": "gatto",
-    "score": 16,
+    "score": 18,
     "playedwords": [
       "partialism",
       "monotocous",
@@ -80,11 +80,12 @@
       "granulater",
       "undramatic",
       "tautonymic",
-      "luncheoner"
+      "luncheoner",
+      "patagonian"
     ],
-    "winnedgame": 8,
+    "winnedgame": 9,
     "average_score": 2,
-    "playedgame": 8
+    "playedgame": 9
   },
   "ag": {
     "username": "ag",
@@ -225,7 +226,7 @@
   "cane": {
     "username": "cane",
     "password": "cane",
-    "score": 27,
+    "score": 30,
     "playedwords": [
       "unfeedable",
       "scorzonera",
@@ -235,11 +236,12 @@
       "dicephalus",
       "notopodial",
       "expertness",
-      "disclosure"
+      "disclosure",
+      "sphenodont"
     ],
-    "winnedgame": 9,
+    "winnedgame": 10,
     "average_score": 3,
-    "playedgame": 9
+    "playedgame": 10
   },
   "panzo": {
     "username": "panzo",
@@ -319,7 +321,7 @@
   "jimmy": {
     "username": "jimmy",
     "password": "jimmy",
-    "score": 16,
+    "score": 9,
     "playedwords": [
       "unbewrayed",
       "templelike",
@@ -328,11 +330,12 @@
       "scurviness",
       "acetolysis",
       "bronchioli",
-      "provitamin"
+      "provitamin",
+      "juxtaposit"
     ],
-    "winnedgame": 8,
-    "average_score": 2,
-    "playedgame": 8
+    "winnedgame": 9,
+    "average_score": 1,
+    "playedgame": 9
   },
   "ff": {
     "username": "ff",

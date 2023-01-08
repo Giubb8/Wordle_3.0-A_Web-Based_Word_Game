@@ -11,6 +11,7 @@ import java.util.SortedSet;
 /*TODO LOGIN MI DEVE RESTITUIRE LO USERNAME CHE POI UTLIIZZO PER SLOGGARE LUTENTE LEVANDOLO DALLA LISTA DOPO CHE ESCO DAL WHILE */
 /* CLASSE PER LA GESTIONE DELLA CONNESSIONE CON I CLIENT */
 public class WordleClientHandler implements  Runnable{
+
     /* UTILITIES PER LA GESTIONE DELLA CONNESSIONE */
     private final Socket client;
     private final BufferedReader in;
@@ -18,11 +19,13 @@ public class WordleClientHandler implements  Runnable{
     private final WordleService wordleService;
     private final StringBuilder secretword;
     private Hashtable<String, ArrayList<String>> playedwords;
-    private ArrayList<String> words;
+    private List<String> words;
     private DatagramSocket ms;
-    ServerCallBackImpl callback;
-    List<String> logged_user;
-    public WordleClientHandler(Socket clientSocket, RegisterServiceImpl registerService, StringBuilder secretword, Hashtable<String, ArrayList<String>> playedwords, ArrayList<String> words, DatagramSocket ms, SortedSet<Player> ranking, ServerCallBackImpl callback, List<String> logged_user) throws IOException {
+    private ServerCallBackImpl callback;
+    private List<String> logged_user;
+
+    /* COSTRUTTORE, SETTO LE UTILITIES E CREO IL WORDLESERVICE */
+    public WordleClientHandler(Socket clientSocket, RegisterServiceImpl registerService, StringBuilder secretword, Hashtable<String, ArrayList<String>> playedwords, List<String> words, DatagramSocket ms, SortedSet<Player> ranking, ServerCallBackImpl callback, List<String> logged_user) throws IOException {
         this.client=clientSocket;
         this.secretword=secretword;
         in=new BufferedReader(new InputStreamReader(client.getInputStream()));
@@ -35,24 +38,15 @@ public class WordleClientHandler implements  Runnable{
         wordleService=new WordleService(registerService,secretword,playedwords,words,ms,ranking,callback,logged_user);
     }
 
-    /* METODO PER LA LETTURA SAFE DEGLI INPUT DA PARTE DEL CLIENT */
-    public String readInput(BufferedReader in) throws IOException {
-        String read=in.readLine();
-        if(read==null){
-            System.out.println("Readed Null from user");
-        }
-        return read;
-    }
-
     /* METODO ESEGUITO DALLA THREADPOOL */
     public void run() {
         int is_over=0;
         String username="";
+
         /* ACCETTO INPUT FINO A QUANDO L'UTENTE NON DECIDE DI DISCONNETTERSI E GESTISCO LE SINGOLE RICHIESTE */
         while(is_over==0){
-            System.out.println("ciclo while handler");
             try {
-                String input=readInput(in);// da controllare largomento
+                String input=in.readLine();// da controllare largomento
                 System.out.println(input);
                 if(input==null)
                     break;
@@ -68,23 +62,16 @@ public class WordleClientHandler implements  Runnable{
                         System.out.println("Comunicazione Terminata");
                     }
                 }
-                /* IL CLIENT HA CHIUSO LA CONNESSIONE */
-                System.out.println("uscito dallo switch case");
-
             } catch (IOException | InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }
-        System.out.println("PRE RIMOZIONE ");
-        for(String name: logged_user){
-            System.out.println(name);
-        }
+        /* IL CLIENT HA TERMINATO LA CONNESSIONE */
+
+        /* RIMUOVO L'UTENTE DALLA LISTA DEGLI UTENTI LOGGATI */
         if(logged_user.contains(username))
             logged_user.remove(username);
-        System.out.println("utenti loggati dopo logout");
-        for(String name: logged_user){
-            System.out.println(name);
-        }
+
         /* UNA VOLTA CHE HO INTERROTTO LA CONNESIONE CON IL CLIENT POSSO CHIUDERE GLI STREAM E LA CONNESSIONE */
         try {
             in.close();

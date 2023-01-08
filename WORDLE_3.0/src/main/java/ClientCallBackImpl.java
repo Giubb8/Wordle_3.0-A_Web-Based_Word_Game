@@ -9,7 +9,7 @@ public class ClientCallBackImpl implements ClientCallBackInterface{
         top_position=new ArrayList<>();
     }
     public void notifyEvent(String value) throws RemoteException {
-            String returnMessage = "Update event received: " + value;
+            String returnMessage = "Update event received: " + value; //TODO CAMBIARE MESSAGGIO
             top_position.add(returnMessage);
             System.out.println("Update Ricevuti:\n"+top_position);
 

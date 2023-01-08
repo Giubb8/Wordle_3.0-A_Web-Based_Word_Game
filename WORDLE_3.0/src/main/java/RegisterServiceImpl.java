@@ -25,11 +25,11 @@ public class RegisterServiceImpl implements RegisterService{
     private final Gson gson=new GsonBuilder().setPrettyPrinting().create();
     private final String playersdata_path="src/main/resources/PlayersData.json";
     private Hashtable<String, ArrayList<String>> playedwords;
+
     public RegisterServiceImpl(int PORT_NUMBER,int REGISTRY_PORT,String SERVER_NAME,Hashtable<String,ArrayList<String>> playedwords) throws RemoteException, FileNotFoundException {
         /* INIZIALIZZO LA HASHTABLE PER RIPRENDERE LO STATO PRECEDENTE DAL FILE .JSON */
         JsonReader reader = new JsonReader(new FileReader(playersdata_path));
         //problemi con parsing del tipo a runtime quindi ho dovuto mettere player
-
         this.players_table= new Gson().fromJson(reader, new TypeToken<Hashtable<String, Player>>() {}.getType());
 
         /* INIZIALIZZO GLI ALTRI VALORI  */
@@ -71,18 +71,24 @@ public class RegisterServiceImpl implements RegisterService{
         else
             return ERROR_CODE;
     }
+
     /* GETTER HASHTABLE */
     public Hashtable<String, Player> getPlayers_table() {
         return players_table;
     }
 
+    /* FUNZIONE PER L'UPDATE DELLE VARIABILI DEL PLAYER */
     public void updateplayer(String player,String word,int score){
+
         players_table.get(player).getPlayedwords().add(word);
+
+        /* CONTROLLO DEL RISULTATO */
         if(score!=0)
             players_table.get(player).addwinnedgame(score);
         else
             players_table.get(player).addplayedgame(score);
 
+        /* SCRITTURA SUL FILE */
         Gson gson=new GsonBuilder().setPrettyPrinting().create();
         try {
             FileOutputStream fos=new FileOutputStream(playersdata_path);

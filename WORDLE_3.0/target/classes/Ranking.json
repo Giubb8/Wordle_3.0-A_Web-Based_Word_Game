@@ -2,7 +2,7 @@
   {
     "username": "cane",
     "password": "cane",
-    "score": 27,
+    "score": 30,
     "playedwords": [
       "unfeedable",
       "scorzonera",
@@ -12,11 +12,12 @@
       "dicephalus",
       "notopodial",
       "expertness",
-      "disclosure"
+      "disclosure",
+      "sphenodont"
     ],
-    "winnedgame": 9,
+    "winnedgame": 10,
     "average_score": 3,
-    "playedgame": 9
+    "playedgame": 10
   },
   {
     "username": "pesce",
@@ -35,6 +36,25 @@
     "winnedgame": 8,
     "average_score": 3,
     "playedgame": 8
+  },
+  {
+    "username": "gatto",
+    "password": "gatto",
+    "score": 18,
+    "playedwords": [
+      "partialism",
+      "monotocous",
+      "mythogonic",
+      "uncreating",
+      "granulater",
+      "undramatic",
+      "tautonymic",
+      "luncheoner",
+      "patagonian"
+    ],
+    "winnedgame": 9,
+    "average_score": 2,
+    "playedgame": 9
   },
   {
     "username": "jimmy",

@@ -24,14 +24,13 @@ public class WordleServerMain {
     public static int WORD_DURATION;
     public static int REGISTRY_PORT;
     public static String SERVER_NAME;
+    public static int UDP_PORT;
     public static final String path_to_wordsfile="src/main/resources/words.txt";
 
+
     public static void main(String[] args) throws IOException, AlreadyBoundException {
-
-
-
-
-        List<String> logged_user= (List<String>) Collections.synchronizedList(new ArrayList<String>());
+        /* UTILITIES */
+        List<String> logged_user= (List<String>) Collections.synchronizedList(new ArrayList<String>()); //LISTA PER CONTENERE GLI UTENTI LOGGATI
         String configfile_path=args[0];
         StringBuilder secretword=new StringBuilder();
         ThreadPoolExecutor threadpool=(ThreadPoolExecutor) newCachedThreadPool();
@@ -47,33 +46,37 @@ public class WordleServerMain {
         ranking.addAll(treeSet);
         //System.out.println("WE R"+ranking);
 
+        /* CONFIGURO IL DATAGRAMSOCKET PER IL MULTICAST */
         int port=4400;
-        DatagramSocket ms=new DatagramSocket(port);
+        DatagramSocket ms=new DatagramSocket(UDP_PORT);
         ms.setReuseAddress(true);
+
         /* CONFIGURO IL SERVER E FACCIO PARTIRE RMI PER LA REGISTRAZIONE  */
         configserver(configfile_path);
         RMI_register_start(registerService);
         ServerCallBackImpl callback=handlecallback();
-        //callback.update("Ciao sono callback");
-        try (ServerSocket server = new ServerSocket(PORT_NUMBER)) {
 
+        /* CREO IL SOCKET PER LA COMUNICAZIONE */
+        try (ServerSocket server = new ServerSocket(PORT_NUMBER)) {
             /* CREO E AVVIO IL MANAGER PER LA PAROLA SEGRETA */
             SecretWordManager sw_manager = new SecretWordManager(secretword, WORD_DURATION);
             sw_manager.start();
-            ArrayList<String> words = sw_manager.txt_to_list(path_to_wordsfile);
+            //<String> words = sw_manager.txt_to_list(path_to_wordsfile);
+            List<String> words= (List<String>) Collections.synchronizedList(new ArrayList<String>()); //LISTA PER CONTENERE GLI UTENTI LOGGATI
+            words.addAll(sw_manager.txt_to_list(path_to_wordsfile));
             /* STA IN ATTESA DELLE CONNESSIONI CON I CLIENT */
             while (true) {
                 threadpool.execute(new WordleClientHandler(server.accept(),registerService,secretword,playedwords,words,ms,ranking,callback,logged_user));
             }
         }
-
-
+        /* FINE DEL MAIN */
     }
 
+    /* FUNZIONE PER GESTIRE LE CALLBACK CON I CLIENT */
     private static ServerCallBackImpl handlecallback() throws RemoteException, AlreadyBoundException {
+        String name = "Server";
         ServerCallBackImpl server = new ServerCallBackImpl( );
         ServerCallBackInterface stub=(ServerCallBackInterface) UnicastRemoteObject.exportObject (server,39000);
-        String name = "Server";
         LocateRegistry.createRegistry(5000);
         Registry registry=LocateRegistry.getRegistry(5000);
         registry.bind(name, stub);
@@ -89,6 +92,7 @@ public class WordleServerMain {
             NUM_THREAD=Integer.parseInt(prop.getProperty("num_thread"));
             WORD_DURATION=Integer.parseInt(prop.getProperty("word_duration"));
             REGISTRY_PORT=Integer.parseInt(prop.getProperty("registry_port"));
+            UDP_PORT=Integer.parseInt(prop.getProperty("udp_port"));
             SERVER_NAME=prop.getProperty("server_name");
             System.out.println("PORT_NUMBER:"+PORT_NUMBER+"\nNUM_THREAD:"+NUM_THREAD+"\nWORD_DURATION:"+WORD_DURATION+"\nREGISTRY_PORT:"+REGISTRY_PORT+"\nSERVER_NAME:"+SERVER_NAME); // stampo il valore delle proprieta
         } catch (IOException ex) {
