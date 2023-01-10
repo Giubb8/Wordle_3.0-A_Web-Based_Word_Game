@@ -15,6 +15,9 @@ public class SecretWordManager extends  Thread{
         this.time=time;
     }
 
+    /* OVVERIDE DEL METODO RUN
+    *  OGNI TIME SECONDI GENERA UNA NUOVA PAROLA SEGRETA
+    * */
     public void run() {
         ArrayList<String> words_list=txt_to_list(path_to_wordsfile);
        // System.out.println(words_list);
@@ -27,7 +30,10 @@ public class SecretWordManager extends  Thread{
         }
     }
 
-    /* FUNZIONE CHE TRASFORMA IL FILE WORDS IN UN ARRAYLIST (PER MOTIVI DI EFFICENZA NELL'ACCESSO ) */
+    /* FUNZIONE CHE TRASFORMA IL FILE WORDS IN UN ARRAYLIST (PER MOTIVI DI EFFICENZA NELL'ACCESSO )
+    * @param: path= path al file da trasformare in una lista
+    * @return: words_list= ArrayList contenente la lista di parole
+    * */
     public ArrayList<String> txt_to_list(String path){
         Scanner s;
         try {

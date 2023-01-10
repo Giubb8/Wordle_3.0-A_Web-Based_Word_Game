@@ -10,6 +10,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
+/* OGGETTO DI TIPO CALLABLE PER LA TRADUZIONE DELLE PAROLE SEGRETE */
+
 public class TranslatorTask implements Callable<String> {
     String str_to_translate;
 
@@ -17,6 +19,14 @@ public class TranslatorTask implements Callable<String> {
         this.str_to_translate=str_to_translate;
     }
 
+    /* OVERRIDE DEL METODO CALL()
+    * EFFETTUA LA TRADUZIONE DELLA PAROLA SEGRETA COLLEGANDOSI CON IL SERVIZIO MYMEMORY
+    * PARSA IL JSON E RICAVA LA TRADUZIONE DA ESSO
+    *
+    * @return: traduzione= la traduzione parsata dall'oggetto Json
+    * @throws: ParseException - errore nel parsing del json ricevuto
+    * @throws: MalformedURLException - errore nell'url del servizio
+    * */
     public String call() throws Exception {
         URL url= new URL("https://api.mymemory.translated.net/get?q=" + str_to_translate + "&langpair=en|it");
         String traduzione=new String();
@@ -43,10 +53,12 @@ public class TranslatorTask implements Callable<String> {
                     System.out.println(traduzione+""+obj.toString());
                 }
             } catch (ParseException e) {
+                System.out.println("Errore nel parsing dell'oggetto Json durante traduzione");
                 e.printStackTrace();
             }
-        } catch (MalformedURLException mue) {
-            mue.printStackTrace(System.err);
+        } catch (MalformedURLException e) {
+            System.out.println("URL non conforme durante traduzione");
+            e.printStackTrace(System.err);
         }
         return traduzione;
     }

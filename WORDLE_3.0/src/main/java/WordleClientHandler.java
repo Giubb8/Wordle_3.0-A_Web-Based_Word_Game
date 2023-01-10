@@ -10,21 +10,20 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.concurrent.ExecutionException;
 
-/*TODO LOGIN MI DEVE RESTITUIRE LO USERNAME CHE POI UTLIIZZO PER SLOGGARE LUTENTE LEVANDOLO DALLA LISTA DOPO CHE ESCO DAL WHILE */
 /* CLASSE PER LA GESTIONE DELLA CONNESSIONE CON I CLIENT */
 public class WordleClientHandler implements  Runnable{
 
     /* UTILITIES PER LA GESTIONE DELLA CONNESSIONE */
-    private final Socket client;
-    private final BufferedReader in;
-    private final PrintWriter out;
-    private final WordleService wordleService;
-    private final StringBuffer secretword;
-    private Hashtable<String, ArrayList<String>> playedwords;
-    private List<String> words;
-    private DatagramSocket ms;
-    private ServerCallBackImpl callback;
-    private List<String> logged_user;
+    private final Socket client; //socket per la comunicazione con il client
+    private final BufferedReader in; // stream in ingresso per la comunicazione con il client
+    private final PrintWriter out; //stream in uscita per la comunicazione con il client
+    private final WordleService wordleService; //oggetto per implementare le funzionalita del gioco Wordle
+    private final StringBuffer secretword; //parola segreta da indovinare, cambia in maniera dinamica
+    private Hashtable<String, ArrayList<String>> playedwords; // hashtable contenente le parole giocate dai singoli utenti
+    private List<String> words; //lista delle parole contenute nel vocabolario
+    private DatagramSocket ms; //Socket per la comunicazione Multicast
+    private ServerCallBackImpl callback; //Implementazione dell'interfaccia per la comunicazione tramite RMI Callback
+    private List<String> logged_user; // Lista degli utenti loggati
 
     /* COSTRUTTORE, SETTO LE UTILITIES E CREO IL WORDLESERVICE */
     public WordleClientHandler(Socket clientSocket, RegisterServiceImpl registerService, StringBuffer secretword, Hashtable<String, ArrayList<String>> playedwords, List<String> words, DatagramSocket ms, SortedSet<Player> ranking, ServerCallBackImpl callback, List<String> logged_user) throws IOException {
@@ -40,7 +39,12 @@ public class WordleClientHandler implements  Runnable{
         wordleService=new WordleService(registerService,secretword,playedwords,words,ms,ranking,callback,logged_user);
     }
 
-    /* METODO ESEGUITO DALLA THREADPOOL */
+    /*
+    * METODO ESEGUITO DALLA THREADPOOL,GESTISCE LA CONNESSIONE CON IL CLIENT
+    * ANALIZZA IL COMANDO E DELEGA ALL'OGGETTO WORDLE SERVICE
+    * @throws: IOException - Errore in lettura dagli stream
+    * @throws: ExecutionException - @see WordleService.playwordle()
+    * */
     public void run() {
         int is_over=0;
         String username="";
@@ -65,8 +69,11 @@ public class WordleClientHandler implements  Runnable{
                     }
                 }
             } catch (IOException | InterruptedException e) {
+                System.out.println();
+                e.printStackTrace();
                 throw new RuntimeException(e);
             } catch (ExecutionException e) {
+                e.printStackTrace();
                 throw new RuntimeException(e);
             }
         }

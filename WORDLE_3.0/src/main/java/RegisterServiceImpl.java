@@ -26,6 +26,10 @@ public class RegisterServiceImpl implements RegisterService{
     private final String playersdata_path="src/main/resources/PlayersData.json";
     private Hashtable<String, ArrayList<String>> playedwords;
 
+    /* RICREA LA TABELLA DEGLI UTENTI E AGGIORNA I VALORI
+    * @param: PORT_NUMBER,REGISTRY_PORT,SERVER_NAME= valori di utilities per la comunicazione
+    * @param: players_table= Hashtable contenente i giocatori e i loro dati,da aggiornare all'avvio
+    * */
     public RegisterServiceImpl(int PORT_NUMBER,int REGISTRY_PORT,String SERVER_NAME,Hashtable<String,ArrayList<String>> playedwords) throws RemoteException, FileNotFoundException {
         /* INIZIALIZZO LA HASHTABLE PER RIPRENDERE LO STATO PRECEDENTE DAL FILE .JSON */
         JsonReader reader = new JsonReader(new FileReader(playersdata_path));
@@ -36,11 +40,13 @@ public class RegisterServiceImpl implements RegisterService{
         this.PORT_NUMBER=PORT_NUMBER;
         this.REGISTRY_PORT=REGISTRY_PORT;
         this.SERVER_NAME=SERVER_NAME;
-        //System.out.println("APPENA INIZIALIZZATO: "+players_table);
         this.playedwords=playedwords;
     }
 
-    /* FUNZIONE USATA PER LA REGISTRAZIONE DEGLI UTENTI  */
+    /* FUNZIONE USATA PER LA REGISTRAZIONE DEGLI UTENTI
+    * @param: newplayer= giocatore da inserire all'interno della hashtable
+    * @return: OK_CODE/ERROR_CODE = codici di errore in base all'esecuzione corretta o meno del metodo
+    * */
     public int register_user(Player newplayer) throws RemoteException {
 
         System.out.println();
@@ -77,7 +83,11 @@ public class RegisterServiceImpl implements RegisterService{
         return players_table;
     }
 
-    /* FUNZIONE PER L'UPDATE DELLE VARIABILI DEL PLAYER */
+    /* FUNZIONE PER L'UPDATE DELLE VARIABILI DEL PLAYER
+    * @param: player = username del player da aggiornare
+    * @param: word= parola giocata
+    * @param: score= punteggio effettuato
+    * */
     public void updateplayer(String player,String word,int score){
 
         players_table.get(player).getPlayedwords().add(word);

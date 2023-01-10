@@ -2,7 +2,7 @@
   {
     "username": "cane",
     "password": "cane",
-    "score": 30,
+    "score": 36,
     "playedwords": [
       "unfeedable",
       "scorzonera",
@@ -13,16 +13,18 @@
       "notopodial",
       "expertness",
       "disclosure",
-      "sphenodont"
+      "sphenodont",
+      "unwalkable",
+      "gonorrheal"
     ],
-    "winnedgame": 10,
+    "winnedgame": 12,
     "average_score": 3,
-    "playedgame": 10
+    "playedgame": 12
   },
   {
     "username": "pesce",
     "password": "pesce",
-    "score": 27,
+    "score": 26,
     "playedwords": [
       "unsoothing",
       "housemaidy",
@@ -32,11 +34,45 @@
       "suicidally",
       "geographer",
       "silkflower",
-      "misbaptize"
+      "misbaptize",
+      "brashiness",
+      "patellidan",
+      "bansalague",
+      "hydropathy"
     ],
-    "winnedgame": 9,
-    "average_score": 3,
-    "playedgame": 9
+    "winnedgame": 13,
+    "average_score": 2,
+    "playedgame": 13
+  },
+  {
+    "username": "jimmy",
+    "password": "jimmy",
+    "score": 20,
+    "playedwords": [
+      "unbewrayed",
+      "templelike",
+      "unfestered",
+      "interclasp",
+      "scurviness",
+      "acetolysis",
+      "bronchioli",
+      "provitamin",
+      "juxtaposit",
+      "impregnate",
+      "esperantic",
+      "whitmonday",
+      "oversupply",
+      "thyrsoidal",
+      "notidanoid",
+      "perilously",
+      "perisarcal",
+      "northbound",
+      "turkomania",
+      "bergsonism"
+    ],
+    "winnedgame": 20,
+    "average_score": 1,
+    "playedgame": 20
   },
   {
     "username": "gatto",
@@ -92,29 +128,6 @@
     "winnedgame": 5,
     "average_score": 3,
     "playedgame": 5
-  },
-  {
-    "username": "jimmy",
-    "password": "jimmy",
-    "score": 13,
-    "playedwords": [
-      "unbewrayed",
-      "templelike",
-      "unfestered",
-      "interclasp",
-      "scurviness",
-      "acetolysis",
-      "bronchioli",
-      "provitamin",
-      "juxtaposit",
-      "impregnate",
-      "esperantic",
-      "whitmonday",
-      "oversupply"
-    ],
-    "winnedgame": 13,
-    "average_score": 1,
-    "playedgame": 13
   },
   {
     "username": "giacomo",

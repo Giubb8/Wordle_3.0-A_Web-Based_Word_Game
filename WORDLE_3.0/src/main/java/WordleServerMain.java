@@ -15,6 +15,8 @@ import java.util.*;
 import java.util.concurrent.ThreadPoolExecutor;
 import static java.util.concurrent.Executors.newCachedThreadPool;
 
+//@author: Andrea Carollo
+// https://github.com/Giubb8
 
 /* SERVER DI WORDLE 3.0*/
 public class WordleServerMain {
@@ -70,7 +72,11 @@ public class WordleServerMain {
         /* FINE DEL MAIN */
     }
 
-    /* FUNZIONE PER GESTIRE LE CALLBACK CON I CLIENT */
+    /* FUNZIONE PER GESTIRE LE CALLBACK CON I CLIENT
+    * @return: server= Implementazione dell'interfaccia "ServerCallBackInterface", per gestione servizio RMI CallBack
+    * @throws: RemoteException - Esportazione dello stub fallimentare
+     * @throws: AlreadyBoundException - Nome pre esistente nel registry
+    * */
     private static ServerCallBackImpl handlecallback() throws RemoteException, AlreadyBoundException {
         String name = "Server";
         ServerCallBackImpl server = new ServerCallBackImpl( );
@@ -81,7 +87,12 @@ public class WordleServerMain {
         return server;
     }
 
-    /* FUNZIONE PER LA CONFIGURAZIONE INIZIALE DEL SERVER */
+    /*
+    * FUNZIONE PER LA CONFIGURAZIONE INIZIALE DEL SERVER
+    * @param: configfile_path= String contenente il path del file di configurazione del Server
+    * @throws: FileNotFoundException - file di configurazione non trovato
+    * @throws: IoException - errore nella lettura dell'input stream
+    * */
     static public void configserver(String configfile_path){
         try (InputStream input = new FileInputStream(configfile_path)){
             Properties prop = new Properties();
@@ -94,11 +105,17 @@ public class WordleServerMain {
             SERVER_NAME=prop.getProperty("server_name");
             System.out.println("PORT_NUMBER:"+PORT_NUMBER+"\nNUM_THREAD:"+NUM_THREAD+"\nWORD_DURATION:"+WORD_DURATION+"\nREGISTRY_PORT:"+REGISTRY_PORT+"\nSERVER_NAME:"+SERVER_NAME); // stampo il valore delle proprieta
         } catch (IOException ex) {
+            System.out.println("IOException sul file di configurazione:");
             ex.printStackTrace();
         }
     }
 
-    /* FUNZIONE PER GESTIRE LA REGISTRAZIONE DEGLI UTENTI TRAMITE RMI*/
+
+     /*
+     * FUNZIONE PER GESTIRE LA REGISTRAZIONE DEGLI UTENTI TRAMITE RMI
+     * @param: registerService= Implementazione dell'interfaccia RegisterService
+     * @throws: RemoteException - Esportazione dello stub fallimentare
+     * */
     static public void RMI_register_start(RegisterServiceImpl registerService){
         try {
             //creo una istanza dell'oggetto remoto

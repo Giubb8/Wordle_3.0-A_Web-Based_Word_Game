@@ -41,16 +41,16 @@ public class WordleService {
     private RegisterServiceImpl registerService;
 
     /* UTILITIES PER GLI INDIZI */
-    public static final String ANSI_WHITE_BACKGROUND = "\u001B[47m";
-    public static final String ANSI_RESET = "\u001B[0m";
-    public static final String ANSI_BLACK = "\u001B[30m";
+    private static final String ANSI_WHITE_BACKGROUND = "\u001B[47m";
+    private static final String ANSI_RESET = "\u001B[0m";
+    private static final String ANSI_BLACK = "\u001B[30m";
     private static final String ANSI_END = "\u001B[0m";
-    public static final String ANSI_GREEN_BACKGROUND = "\u001B[42m";
-    public static final String ANSI_YELLOW_BACKGROUND = "\u001B[43m";
+    private static final String ANSI_GREEN_BACKGROUND = "\u001B[42m";
+    private static final String ANSI_YELLOW_BACKGROUND = "\u001B[43m";
 
-    public String s_username;
-    public String s_secretword;
-    public int s_score;
+    private String s_username;
+    private String s_secretword;
+    private int s_score;
     private SortedSet<Player> ranking;
     private ServerCallBackImpl callback;
     private List<String> logged_user;
@@ -69,14 +69,17 @@ public class WordleService {
         this.ranking=ranking;
         this.callback=callback;
         this.logged_user=logged_user;
-        //System.out.println(ranking);
-        //ms.setReuseAddress(true);
-       // System.out.println("reuse ?"+ms.getReuseAddress());
-
     }
 
-    /* METODO PER EFFETTUARE IL LOGIN DA PARTE DELL'UTENTE */
-    public String login(BufferedReader in, PrintWriter out) throws IOException, InterruptedException {
+    /* METODO PER EFFETTUARE IL LOGIN DA PARTE DELL'UTENTE
+    *  EFFETTUA I CONTROLLI SUI DATI E RESTITUISCE AL CLIENT
+    *  I CODICI DI ERRORE ADATTI AL PROBLEMA SORTO IN  FASE DI LOGIN
+    * @param: in= Stream per la comunicazione in ingresso dal client
+    * @param out= Stream per la comunicazione in uscita verso il client
+    * @returns: username= username dell'utente che si è loggato
+    * @throws: IOException - lettura dati dagli stream
+    * */
+    public String login(BufferedReader in, PrintWriter out) throws IOException {
         /* VARIABILI DI SUPPORTO E STREAM */
         String username=in.readLine();
         String password=in.readLine();
@@ -113,23 +116,31 @@ public class WordleService {
         return username;
     }
 
-    /* FUNZIONE PER IL LOGOUT DA PARTE DELL'UTENTE */ //TODO ANCORA DA IMPLEMENTARE
+    /* FUNZIONE PER IL LOGOUT DA PARTE DELL'UTENTE
+    * @return: ret= intero per uscire dal while di WordleClientHandler
+    * */
     public int logout(){
         int ret=1;
         System.out.println("logout");
         return ret;
     }
 
-    /* FUNZIONE PER GENERARE GLI INDIZI DA RESTITUIRE ALL'UTENTE */
-    public static  StringBuilder getWordHint(String word,String word2) {
+    /* FUNZIONE PER GENERARE GLI INDIZI DA RESTITUIRE ALL'UTENTE
+    *  SFRUTTA I CODICI ANSI PER LA COLORAZIONE DEL BACKGROUND
+    *  E DEL FONT DEL TERMINALE
+    * @param: word= Stringa contenente il tentativo dell'utente
+    * @param: s_word= Stringa contenente la parola da indovinare (secretword)
+    * @returns: hints= String contenente l'indizio da fornire al client
+    * */
+    public static  StringBuilder getWordHint(String word,String s_word) {
         StringBuilder hints = new StringBuilder();
-        for (int i=0; i < word2.length(); i++) {
+        for (int i=0; i < s_word.length(); i++) {
             char curr_character = word.charAt(i);
             String newChar;
-            if (word2.charAt(i) == curr_character) { // lettera nella posizione giusta
+            if (s_word.charAt(i) == curr_character) { // lettera nella posizione giusta
                 newChar = ANSI_GREEN_BACKGROUND +ANSI_BLACK+ curr_character + ANSI_END;
             }
-            else if (word2.indexOf(curr_character) != -1) { // lettera c'è ma non nella posizione i
+            else if (s_word.indexOf(curr_character) != -1) { // lettera c'è ma non nella posizione i
                 newChar = ANSI_YELLOW_BACKGROUND + ANSI_BLACK+ curr_character + ANSI_END;
             }
             else  {
@@ -141,7 +152,19 @@ public class WordleService {
     }
 
 
-    /* FUNZIONE PER AVVIARE IL GIOCO */
+    /*
+    *  FUNZIONE PER AVVIARE IL GIOCO, EFFETTUA I CONTROLLI SUI DATI,
+    *  IMPLEMENTA LE FUNZIONALITA' DEL GIOCO, LANCIA IL THREAD PER LA TRADUZIONE DELLA PAROLA
+    *  AGGIORNA LA CLASSIFICA E GESTISCE LA COMUNICAZIONE CON IL CLIENT
+    *
+    * @param: secret_word= StringBuffer contenente la parola segreta per la corrente sessione di gioco
+    * @param: in= Stream per la comunicazione in ingresso dal client
+    * @param out= Stream per la comunicazione in uscita verso il client
+    * @returns: OK|ERROR = codice per segnalare la buona o meno esecuzione del metodo
+    * @throws: IOException - errore nella comunicazione negli stream in/out
+    * @throws: ExecutionException || InterruptedException - errore nella gestione della futureTask
+    *
+    * */
     public int playwordle(StringBuffer secret_word, BufferedReader in, PrintWriter out) throws IOException, ExecutionException, InterruptedException {
         /* SALVO LA PAROLA SEGRETA CORRENTE IN UNA STRINGA QUINDI IMMUTABLE */
         String current_secretword=secret_word.toString();
@@ -212,7 +235,17 @@ public class WordleService {
 
     }
 
-    /* FUNZIONE PER AGGIORNARE LA CLASSIFICA */
+    /*
+    * FUNZIONE PER AGGIORNARE LA CLASSIFICA AGGIORNA IL FILE JSON ASSOCIATO
+    * CONTROLLA SE LA CLASSIFICA SI AGGIORNA NELLE PRIME 3 POSIZIONI
+    * E COMUNICA AL CLIENT TRAMITE CALLBACK
+    *
+    * @param: session_username= username del quale bisogna aggiornare la classifica
+    * @param: current_secretword= secretword giocata dall'utente al momento nel quale l'update viene effettuato
+    * @param: ranking= SortedSet che implementa la classifica
+    * @param: score= punteggio effettuato dall'utente
+    * @param: callback= istanza per gestire la comunicazione tramite RMI Callback
+    * */
     private void updateranking(String session_username, String current_secretword, SortedSet<Player> ranking, int score, ServerCallBackImpl callback) throws RemoteException {
         Player prev;
         prev=players_table.get(session_username);
@@ -252,10 +285,17 @@ public class WordleService {
         }
     }
 
-    /* FUNZIONE PER LA CONDIVISIONE DEI RISULTATI CON UDP MULTICASTING */
+    /* FUNZIONE PER LA CONDIVISIONE DEI RISULTATI CON UDP MULTICASTING
+    * @param: out= stream per la comunicazione verso l'utente
+    * @throws: IOException - errori nella comunicazione tramite stream
+    * */
     public  int share(PrintWriter out) throws IOException {
         byte[] data;
-        String tosend=""+s_username+" for "+s_secretword+"scored:"+s_score;
+        String tosend;
+        if(s_username==null ||s_secretword==null||s_username.equals("") || s_secretword.equals("") )
+             tosend=(WORD_NOT_EXISTS);
+        else
+            tosend=""+s_username+" for "+s_secretword+" scored:"+s_score;
         data=tosend.getBytes();
 
         /* INVIO IL PACCHETTO */
@@ -305,7 +345,11 @@ public class WordleService {
         return traduzione;
     }
 
-    /* FUNZIONE PER MANDARE LE STATISTICHE DELL'UTENTE */
+    /* FUNZIONE PER MANDARE LE STATISTICHE DELL'UTENTE
+    *
+    * @param: in= Stream per la comunicazione in ingresso dal client
+    * @param out= Stream per la comunicazione in uscita verso il client
+    * */
     public int sendstats(BufferedReader in, PrintWriter out) {
         int ret=0;
         String stat=this.players_table.get(session_username).toString();
@@ -314,7 +358,11 @@ public class WordleService {
         return ret;
     }
 
-    /* FUNZIONE PER MANDARE LA CLASSIFICA ALL'UTENTE */
+    /* FUNZIONE PER MANDARE LA CLASSIFICA ALL'UTENTE
+    *
+    * @param: in= Stream per la comunicazione in ingresso dal client
+    * @param out= Stream per la comunicazione in uscita verso il client
+    * */
     public int showranking(BufferedReader in, PrintWriter out) {
         int ret=0;
         out.println(ranking.toString());

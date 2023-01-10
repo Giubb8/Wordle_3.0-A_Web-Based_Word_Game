@@ -31,12 +31,16 @@ public class ServerCallBackImpl extends RemoteObject implements ServerCallBackIn
         }
     }
 
-   /* NOTIFICA DI UNA VARIAZIONE DEL VALORE,QUANDO CHIAMATO EFFETTUA CALLBACK */
+   /* NOTIFICA DI UNA VARIAZIONE DEL VALORE,QUANDO CHIAMATO EFFETTUA CALLBACK
+   * @param: value= variazione del valore di cui eseguire l'update, aggiornando i client via callback
+   * */
     public void update(String value) throws RemoteException {
         doCallbacks(value);
     }
 
-    /* EFFETTUA LA CALLBACK */
+    /* EFFETTUA LA CALLBACK
+     * @param: value= variazione del valore di cui eseguire l'update, aggiornando i client via callback
+    * */
     private synchronized void doCallbacks(String value) throws RemoteException {
         System.out.println("Starting callbacks. for"+clients.toString());
         Iterator i = clients.iterator( );
