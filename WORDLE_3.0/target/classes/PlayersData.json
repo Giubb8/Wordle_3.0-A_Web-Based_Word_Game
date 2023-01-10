@@ -26,7 +26,7 @@
   "pesce": {
     "username": "pesce",
     "password": "pesce",
-    "score": 24,
+    "score": 27,
     "playedwords": [
       "unsoothing",
       "housemaidy",
@@ -35,11 +35,12 @@
       "outfreeman",
       "suicidally",
       "geographer",
-      "silkflower"
+      "silkflower",
+      "misbaptize"
     ],
-    "winnedgame": 8,
+    "winnedgame": 9,
     "average_score": 3,
-    "playedgame": 8
+    "playedgame": 9
   },
   "popolo": {
     "username": "popolo",
@@ -321,7 +322,7 @@
   "jimmy": {
     "username": "jimmy",
     "password": "jimmy",
-    "score": 16,
+    "score": 11,
     "playedwords": [
       "unbewrayed",
       "templelike",
@@ -330,23 +331,18 @@
       "scurviness",
       "acetolysis",
       "bronchioli",
-      "provitamin"
+      "provitamin",
+      "juxtaposit",
+      "impregnate",
+      "esperantic"
     ],
-    "winnedgame": 8,
-    "average_score": 2,
-    "playedgame": 8
+    "winnedgame": 11,
+    "average_score": 1,
+    "playedgame": 11
   },
   "ff": {
     "username": "ff",
     "password": "ff",
-    "score": 0,
-    "winnedgame": 0,
-    "average_score": 0,
-    "playedgame": 0
-  },
-  "Paolo": {
-    "username": "Paolo",
-    "password": "Palla",
     "score": 0,
     "winnedgame": 0,
     "average_score": 0,
@@ -360,9 +356,9 @@
     "average_score": 0,
     "playedgame": 0
   },
-  "sale": {
-    "username": "sale",
-    "password": "sale",
+  "Paolo": {
+    "username": "Paolo",
+    "password": "Palla",
     "score": 0,
     "winnedgame": 0,
     "average_score": 0,
@@ -371,6 +367,14 @@
   "pepe": {
     "username": "pepe",
     "password": "pepe",
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "sale": {
+    "username": "sale",
+    "password": "sale",
     "score": 0,
     "winnedgame": 0,
     "average_score": 0,
@@ -401,19 +405,19 @@
     "average_score": 2,
     "playedgame": 4
   },
-  "prova": {
-    "username": "prova",
-    "password": "prova",
-    "score": 0,
-    "winnedgame": 0,
-    "average_score": 0,
-    "playedgame": 0
-  },
   "lopo": {
     "username": "lopo",
     "password": "lopo",
     "score": 0,
     "playedwords": [],
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "prova": {
+    "username": "prova",
+    "password": "prova",
+    "score": 0,
     "winnedgame": 0,
     "average_score": 0,
     "playedgame": 0
@@ -442,22 +446,6 @@
     "average_score": 0,
     "playedgame": 0
   },
-  "termos": {
-    "username": "termos",
-    "password": "termos",
-    "score": 0,
-    "winnedgame": 0,
-    "average_score": 0,
-    "playedgame": 0
-  },
-  "hh": {
-    "username": "hh",
-    "password": "hh",
-    "score": 0,
-    "winnedgame": 0,
-    "average_score": 0,
-    "playedgame": 0
-  },
   "giacomo": {
     "username": "giacomo",
     "password": "giacomo",
@@ -471,6 +459,22 @@
     "winnedgame": 4,
     "average_score": 3,
     "playedgame": 4
+  },
+  "hh": {
+    "username": "hh",
+    "password": "hh",
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
+  },
+  "termos": {
+    "username": "termos",
+    "password": "termos",
+    "score": 0,
+    "winnedgame": 0,
+    "average_score": 0,
+    "playedgame": 0
   },
   "bb": {
     "username": "bb",

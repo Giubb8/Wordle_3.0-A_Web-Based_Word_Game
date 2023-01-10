@@ -2,6 +2,9 @@ import java.io.*;
 import java.net.*;
 import java.rmi.RemoteException;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -30,7 +33,7 @@ public class WordleService {
     private int multicastport;
     private DatagramSocket ms;
     private final Hashtable<String,Player> players_table;
-    private final StringBuilder secretword;
+    private final StringBuffer secretword;
     private ArrayList<String> played_words;
     private String session_username;
     private Hashtable<String, ArrayList<String>> playedwords;
@@ -53,7 +56,7 @@ public class WordleService {
     private List<String> logged_user;
 
     /*COSTRUTTORE DEL SERVIZIO WORDLE */
-    public WordleService(RegisterServiceImpl registerService, StringBuilder secretword, Hashtable<String, ArrayList<String>> playedwords, List<String> words, DatagramSocket ms, SortedSet<Player> ranking, ServerCallBackImpl callback, List<String> logged_user) throws UnknownHostException, SocketException {
+    public WordleService(RegisterServiceImpl registerService, StringBuffer secretword, Hashtable<String, ArrayList<String>> playedwords, List<String> words, DatagramSocket ms, SortedSet<Player> ranking, ServerCallBackImpl callback, List<String> logged_user) throws UnknownHostException, SocketException {
         this.players_table=registerService.getPlayers_table();
         this.registerService=registerService;
         this.secretword=secretword;
@@ -139,10 +142,13 @@ public class WordleService {
 
 
     /* FUNZIONE PER AVVIARE IL GIOCO */
-    public int playwordle(StringBuilder secret_word,BufferedReader in, PrintWriter out) throws IOException {
+    public int playwordle(StringBuffer secret_word, BufferedReader in, PrintWriter out) throws IOException, ExecutionException, InterruptedException {
         /* SALVO LA PAROLA SEGRETA CORRENTE IN UNA STRINGA QUINDI IMMUTABLE */
         String current_secretword=secret_word.toString();
-
+        TranslatorTask t_task=new TranslatorTask(current_secretword);
+        FutureTask<String> futuretask=new FutureTask<String>(t_task);
+        Thread tr_thread=new Thread(futuretask);
+        tr_thread.start();
         /* EFFETTUO CONTROLLO SULLE PAROLE GIOCATE DALL'UTENTE */
         boolean condition2=(!registerService.getPlayers_table().get(session_username).getPlayedwords().isEmpty() && registerService.getPlayers_table().get(session_username).getPlayedwords().contains(current_secretword));
         if (condition2){
@@ -190,9 +196,11 @@ public class WordleService {
         updateranking(session_username,current_secretword,ranking,score,callback);
 
         /* TRADUCO LA PAROLA E LA RESTITUISCO AL CLIENT */
-        String traduzione=translateWords(current_secretword);
-        System.out.println("traduzione: "+traduzione);
-        out.println(traduzione);
+        /*String traduzione=translateWords(current_secretword);
+        System.out.println("traduzione: "+traduzione);*/
+        String traduzionefuture=futuretask.get();
+        System.out.println("TRADUZIONE FUTURE "+traduzionefuture);
+        out.println(traduzionefuture);
 
         /* AGGIORNO L'ULTIMA CONFIGURAZIONE DELLA SESSIONE DI GIOCO PIU RECENTE */
         s_username=session_username;
@@ -262,7 +270,7 @@ public class WordleService {
         return 0;
     }
 
-    /* FUNZIONE PER LA TRADUZIONE DELLE PAROLE CON MYMEMORY */
+    /* FUNZIONE PER LA TRADUZIONE DELLE PAROLE CON MYMEMORY */ //TODO FORSE CANCELLARE E LASCIARE AL NUOVO THREAD IL COMPITO
     public static String translateWords(String word) throws IOException {
         URL url= new URL("https://api.mymemory.translated.net/get?q=" + word + "&langpair=en|it");
         String traduzione=new String();

@@ -22,7 +22,7 @@
   {
     "username": "pesce",
     "password": "pesce",
-    "score": 24,
+    "score": 27,
     "playedwords": [
       "unsoothing",
       "housemaidy",
@@ -31,11 +31,12 @@
       "outfreeman",
       "suicidally",
       "geographer",
-      "silkflower"
+      "silkflower",
+      "misbaptize"
     ],
-    "winnedgame": 8,
+    "winnedgame": 9,
     "average_score": 3,
-    "playedgame": 8
+    "playedgame": 9
   },
   {
     "username": "gatto",
@@ -93,6 +94,29 @@
     "playedgame": 5
   },
   {
+    "username": "jimmy",
+    "password": "jimmy",
+    "score": 13,
+    "playedwords": [
+      "unbewrayed",
+      "templelike",
+      "unfestered",
+      "interclasp",
+      "scurviness",
+      "acetolysis",
+      "bronchioli",
+      "provitamin",
+      "juxtaposit",
+      "impregnate",
+      "esperantic",
+      "whitmonday",
+      "oversupply"
+    ],
+    "winnedgame": 13,
+    "average_score": 1,
+    "playedgame": 13
+  },
+  {
     "username": "giacomo",
     "password": "giacomo",
     "score": 12,
@@ -105,25 +129,6 @@
     "winnedgame": 4,
     "average_score": 3,
     "playedgame": 4
-  },
-  {
-    "username": "jimmy",
-    "password": "jimmy",
-    "score": 9,
-    "playedwords": [
-      "unbewrayed",
-      "templelike",
-      "unfestered",
-      "interclasp",
-      "scurviness",
-      "acetolysis",
-      "bronchioli",
-      "provitamin",
-      "juxtaposit"
-    ],
-    "winnedgame": 9,
-    "average_score": 1,
-    "playedgame": 9
   },
   {
     "username": "polo",

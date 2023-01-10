@@ -6,11 +6,11 @@ import java.util.Scanner;
 
 /* CLASSE PER LA GESTIONE DELLA PAROLA SEGRETA, OGNI TIME SECONDI CAMBIA LA PAROLA */
 public class SecretWordManager extends  Thread{
-    private final StringBuilder secretword;
+    private final StringBuffer secretword;
     private final String path_to_wordsfile="src/main/resources/words.txt";
     private final int time;
 
-    public SecretWordManager(StringBuilder secretword,int time){
+    public SecretWordManager(StringBuffer secretword,int time){
         this.secretword=secretword;
         this.time=time;
     }

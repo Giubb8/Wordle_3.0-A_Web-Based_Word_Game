@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.SortedSet;
+import java.util.concurrent.ExecutionException;
+
 /*TODO LOGIN MI DEVE RESTITUIRE LO USERNAME CHE POI UTLIIZZO PER SLOGGARE LUTENTE LEVANDOLO DALLA LISTA DOPO CHE ESCO DAL WHILE */
 /* CLASSE PER LA GESTIONE DELLA CONNESSIONE CON I CLIENT */
 public class WordleClientHandler implements  Runnable{
@@ -17,7 +19,7 @@ public class WordleClientHandler implements  Runnable{
     private final BufferedReader in;
     private final PrintWriter out;
     private final WordleService wordleService;
-    private final StringBuilder secretword;
+    private final StringBuffer secretword;
     private Hashtable<String, ArrayList<String>> playedwords;
     private List<String> words;
     private DatagramSocket ms;
@@ -25,7 +27,7 @@ public class WordleClientHandler implements  Runnable{
     private List<String> logged_user;
 
     /* COSTRUTTORE, SETTO LE UTILITIES E CREO IL WORDLESERVICE */
-    public WordleClientHandler(Socket clientSocket, RegisterServiceImpl registerService, StringBuilder secretword, Hashtable<String, ArrayList<String>> playedwords, List<String> words, DatagramSocket ms, SortedSet<Player> ranking, ServerCallBackImpl callback, List<String> logged_user) throws IOException {
+    public WordleClientHandler(Socket clientSocket, RegisterServiceImpl registerService, StringBuffer secretword, Hashtable<String, ArrayList<String>> playedwords, List<String> words, DatagramSocket ms, SortedSet<Player> ranking, ServerCallBackImpl callback, List<String> logged_user) throws IOException {
         this.client=clientSocket;
         this.secretword=secretword;
         in=new BufferedReader(new InputStreamReader(client.getInputStream()));
@@ -63,6 +65,8 @@ public class WordleClientHandler implements  Runnable{
                     }
                 }
             } catch (IOException | InterruptedException e) {
+                throw new RuntimeException(e);
+            } catch (ExecutionException e) {
                 throw new RuntimeException(e);
             }
         }

@@ -19,20 +19,20 @@ import static java.util.concurrent.Executors.newCachedThreadPool;
 /* SERVER DI WORDLE 3.0*/
 public class WordleServerMain {
     /* COSTANTI PER LA DESCRIZIONE DEL SERVER */
-    public static int PORT_NUMBER;
-    public static int NUM_THREAD;
-    public static int WORD_DURATION;
-    public static int REGISTRY_PORT;
-    public static String SERVER_NAME;
-    public static int UDP_PORT;
-    public static final String path_to_wordsfile="src/main/resources/words.txt";
+    private static int PORT_NUMBER;
+    private static int NUM_THREAD;
+    private static int WORD_DURATION;
+    private static int REGISTRY_PORT;
+    private static String SERVER_NAME;
+    private static int UDP_PORT;
+    private static final String path_to_wordsfile="src/main/resources/words.txt";
 
 
     public static void main(String[] args) throws IOException, AlreadyBoundException {
         /* UTILITIES */
         List<String> logged_user= (List<String>) Collections.synchronizedList(new ArrayList<String>()); //LISTA PER CONTENERE GLI UTENTI LOGGATI
         String configfile_path=args[0];
-        StringBuilder secretword=new StringBuilder();
+        StringBuffer secretword=new StringBuffer();
         ThreadPoolExecutor threadpool=(ThreadPoolExecutor) newCachedThreadPool();
         Hashtable<String,ArrayList<String>> playedwords=new Hashtable<>();//FORSE POSSO ELIMINARE         //TODO FORSE POSSO TRASFORMARE QUESTA HASHTABLE IN UNA HASHTABLE CONTENTENTE TIPO LE STATISTICHE DI OGNI GIOCATORE METTENDO UN OGGETTO AL POSTO DI ARRAYLIST
         RegisterServiceImpl registerService=new RegisterServiceImpl(PORT_NUMBER,REGISTRY_PORT,SERVER_NAME,playedwords);//Oggetto per la registrazione degli utenti tramite RMI
@@ -44,10 +44,8 @@ public class WordleServerMain {
         TreeSet<Player> treeSet=new Gson().fromJson(reader, new TypeToken<TreeSet<Player>>() {}.getType());
         SortedSet<Player> ranking = Collections.synchronizedSortedSet(new TreeSet<Player>(comparator));
         ranking.addAll(treeSet);
-        //System.out.println("WE R"+ranking);
 
         /* CONFIGURO IL DATAGRAMSOCKET PER IL MULTICAST */
-        int port=4400;
         DatagramSocket ms=new DatagramSocket(UDP_PORT);
         ms.setReuseAddress(true);
 
