@@ -1,5 +1,5 @@
 import java.util.Comparator;
-
+/* COMPARATOR PER PERMETTERE L'ORDINE DEL TREESET CONCORRENTE */
 public class PlayerRankingComparator implements Comparator<Player> {
 
 

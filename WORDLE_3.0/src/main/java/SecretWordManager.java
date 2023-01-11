@@ -4,16 +4,20 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 
+/* CLASSE PER LA GESTIONE DELLA PAROLA SEGRETA, OGNI TIME SECONDI CAMBIA LA PAROLA */
 public class SecretWordManager extends  Thread{
-    private final StringBuilder secretword;
-    private final String path_to_wordsfile="src/main/resources/words.txt";
+    private final StringBuffer secretword;
+    private final String path_to_wordsfile="../resources/words.txt";
     private final int time;
 
-    public SecretWordManager(StringBuilder secretword,int time){
+    public SecretWordManager(StringBuffer secretword,int time){
         this.secretword=secretword;
         this.time=time;
     }
 
+    /* OVVERIDE DEL METODO RUN
+    *  OGNI TIME SECONDI GENERA UNA NUOVA PAROLA SEGRETA
+    * */
     public void run() {
         ArrayList<String> words_list=txt_to_list(path_to_wordsfile);
        // System.out.println(words_list);
@@ -24,10 +28,12 @@ public class SecretWordManager extends  Thread{
             try {Thread.sleep(time);} catch (InterruptedException e) {throw new RuntimeException(e);}
             secretword.setLength(0);
         }
-
     }
 
-    /* FUNZIONE CHE TRASFORMA IL FILE WORDS IN UN ARRAYLIST (PER MOTIVI DI EFFICENZA NELL'ACCESSO ) */
+    /* FUNZIONE CHE TRASFORMA IL FILE WORDS IN UN ARRAYLIST (PER MOTIVI DI EFFICENZA NELL'ACCESSO )
+    * @param: path= path al file da trasformare in una lista
+    * @return: words_list= ArrayList contenente la lista di parole
+    * */
     public ArrayList<String> txt_to_list(String path){
         Scanner s;
         try {

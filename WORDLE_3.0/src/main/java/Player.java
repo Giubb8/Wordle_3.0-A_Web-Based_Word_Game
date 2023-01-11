@@ -1,7 +1,9 @@
 import java.io.Serializable;
 import java.util.ArrayList;
 
+/* CLASSE PER RAPPRESENTARE IL GIOCATORE */
 public class Player implements Serializable,Comparable<Player> {
+    /* VARIABILI PER RAPPRESENTARE IL GIOCATORE */
     private static final long serialVersionUID = 1L;
     final private String username;
     final private String password;
@@ -10,6 +12,7 @@ public class Player implements Serializable,Comparable<Player> {
     private int winnedgame;
     private int average_score;
     private int playedgame;
+
     public Player(String username,String password,int score){
         this.password=password;
         this.score=score;
@@ -32,6 +35,9 @@ public class Player implements Serializable,Comparable<Player> {
         return username;
     }
 
+    /* FUNZIONE PER AGGIUNGERE UNA PARTITA VINTA AL GIOCATORE,AGGIORNANDO LE STATISTICHE
+    * @param: score= punteggio effettuato dal giocatore
+    * */
     public void addwinnedgame(int score) {
         this.winnedgame++;
         int sum=this.average_score*this.playedgame;
@@ -39,6 +45,10 @@ public class Player implements Serializable,Comparable<Player> {
         this.score=this.winnedgame*this.average_score;
         this.playedgame++;
     }
+
+    /* FUNZIONE PER AGGIUNGERE UNA PARTITA GIOCATA AL GIOCATORE
+     * @param: score= punteggio effettuato dal giocatore
+     * */
     public void addplayedgame(int score){
         if(score==0){
             int sum=this.average_score*this.playedgame;
@@ -48,10 +58,13 @@ public class Player implements Serializable,Comparable<Player> {
         this.playedgame++;
 
     }
+
+    /* FUNZIONE PER RESTITUIRE LE PAROLE GIOCATE DAL GIOCATORE */
     public ArrayList<String> getPlayedwords(){ return playedwords; }
-    /* Override per consentire la stampa nella hashtable */
+
+    /* OVERRIDE PER CONSENTIRE LA STAMPA NELLE HASHTABLE */
     public String toString(){
-        return "\nPlayer: "+this.username+"\nPassword: "+this.password+"\nScore: "+this.score+"\nWinnedGame: "+this.winnedgame+"\nPlayedGame: "+this.playedgame+"\nAVGscore: "+this.average_score+"PlayedWord:"+this.playedwords+"\n";
+        return "\nPlayer: "+this.username+"\nPassword: "+this.password+"\nScore: "+this.score+"\nWinnedGame: "+this.winnedgame+"\nPlayedGame: "+this.playedgame+"\nAVGscore: "+this.average_score+"\nPlayedWord:"+this.playedwords+"\n";
     }
 
 

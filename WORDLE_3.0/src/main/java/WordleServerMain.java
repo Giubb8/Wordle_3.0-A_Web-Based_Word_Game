@@ -15,72 +15,89 @@ import java.util.*;
 import java.util.concurrent.ThreadPoolExecutor;
 import static java.util.concurrent.Executors.newCachedThreadPool;
 
+/*
+* @author: Andrea Carollo
+* https://github.com/Giubb8
+*/
+
+
 
 /* SERVER DI WORDLE 3.0*/
 public class WordleServerMain {
     /* COSTANTI PER LA DESCRIZIONE DEL SERVER */
-    public static int PORT_NUMBER;
-    public static int NUM_THREAD;
-    public static int WORD_DURATION;
-    public static int REGISTRY_PORT;
-    public static String SERVER_NAME;
-    public static final String path_to_wordsfile="src/main/resources/words.txt";
+    private static int PORT_NUMBER;
+    private static int NUM_THREAD;
+    private static int WORD_DURATION;
+    private static int REGISTRY_PORT;
+    private static String SERVER_NAME;
+    private static int UDP_PORT;
+    private static final String path_to_wordsfile="../resources/words.txt";
+
 
     public static void main(String[] args) throws IOException, AlreadyBoundException {
-
-
-
-
-
+        /* UTILITIES */
+        System.out.println(System.getProperty("user.dir"));
+        List<String> logged_user= (List<String>) Collections.synchronizedList(new ArrayList<String>()); //LISTA PER CONTENERE GLI UTENTI LOGGATI
         String configfile_path=args[0];
-        StringBuilder secretword=new StringBuilder();
+        StringBuffer secretword=new StringBuffer();
         ThreadPoolExecutor threadpool=(ThreadPoolExecutor) newCachedThreadPool();
         Hashtable<String,ArrayList<String>> playedwords=new Hashtable<>();//FORSE POSSO ELIMINARE         //TODO FORSE POSSO TRASFORMARE QUESTA HASHTABLE IN UNA HASHTABLE CONTENTENTE TIPO LE STATISTICHE DI OGNI GIOCATORE METTENDO UN OGGETTO AL POSTO DI ARRAYLIST
         RegisterServiceImpl registerService=new RegisterServiceImpl(PORT_NUMBER,REGISTRY_PORT,SERVER_NAME,playedwords);//Oggetto per la registrazione degli utenti tramite RMI
 
         /* CREO E RIEMPIO LA CLASSIFICA */
-        String ranking_path="src/main/resources/Ranking.json";
+        String ranking_path="../resources/Ranking.json";
         JsonReader reader = new JsonReader(new FileReader(ranking_path));
         PlayerRankingComparator comparator=new PlayerRankingComparator();
         TreeSet<Player> treeSet=new Gson().fromJson(reader, new TypeToken<TreeSet<Player>>() {}.getType());
         SortedSet<Player> ranking = Collections.synchronizedSortedSet(new TreeSet<Player>(comparator));
         ranking.addAll(treeSet);
-        //System.out.println("WE R"+ranking);
 
-        int port=4400;
-        DatagramSocket ms=new DatagramSocket(port);
+        /* CONFIGURO IL DATAGRAMSOCKET PER IL MULTICAST */
+        DatagramSocket ms=new DatagramSocket(UDP_PORT);
         ms.setReuseAddress(true);
+
         /* CONFIGURO IL SERVER E FACCIO PARTIRE RMI PER LA REGISTRAZIONE  */
         configserver(configfile_path);
         RMI_register_start(registerService);
         ServerCallBackImpl callback=handlecallback();
-        //callback.update("Ciao sono callback");
-        try (ServerSocket server = new ServerSocket(PORT_NUMBER)) {
 
+        /* CREO IL SOCKET PER LA COMUNICAZIONE */
+        try (ServerSocket server = new ServerSocket(PORT_NUMBER)) {
             /* CREO E AVVIO IL MANAGER PER LA PAROLA SEGRETA */
             SecretWordManager sw_manager = new SecretWordManager(secretword, WORD_DURATION);
             sw_manager.start();
-            ArrayList<String> words = sw_manager.txt_to_list(path_to_wordsfile);
+            //<String> words = sw_manager.txt_to_list(path_to_wordsfile);
+            List<String> words= (List<String>) Collections.synchronizedList(new ArrayList<String>()); //LISTA PER CONTENERE GLI UTENTI LOGGATI
+            words.addAll(sw_manager.txt_to_list(path_to_wordsfile));
             /* STA IN ATTESA DELLE CONNESSIONI CON I CLIENT */
             while (true) {
-                threadpool.execute(new WordleClientHandler(server.accept(),registerService,secretword,playedwords,words,ms,ranking,callback));
+                threadpool.execute(new WordleClientHandler(server.accept(),registerService,secretword,playedwords,words,ms,ranking,callback,logged_user));
             }
         }
-
-
+        /* FINE DEL MAIN */
     }
 
+    /* FUNZIONE PER GESTIRE LE CALLBACK CON I CLIENT
+    * @return: server= Implementazione dell'interfaccia "ServerCallBackInterface", per gestione servizio RMI CallBack
+    * @throws: RemoteException - Esportazione dello stub fallimentare
+     * @throws: AlreadyBoundException - Nome pre esistente nel registry
+    * */
     private static ServerCallBackImpl handlecallback() throws RemoteException, AlreadyBoundException {
+        String name = "Server";
         ServerCallBackImpl server = new ServerCallBackImpl( );
         ServerCallBackInterface stub=(ServerCallBackInterface) UnicastRemoteObject.exportObject (server,39000);
-        String name = "Server";
         LocateRegistry.createRegistry(5000);
         Registry registry=LocateRegistry.getRegistry(5000);
         registry.bind(name, stub);
         return server;
     }
 
-    /* FUNZIONE PER LA CONFIGURAZIONE INIZIALE DEL SERVER */
+    /*
+    * FUNZIONE PER LA CONFIGURAZIONE INIZIALE DEL SERVER
+    * @param: configfile_path= String contenente il path del file di configurazione del Server
+    * @throws: FileNotFoundException - file di configurazione non trovato
+    * @throws: IoException - errore nella lettura dell'input stream
+    * */
     static public void configserver(String configfile_path){
         try (InputStream input = new FileInputStream(configfile_path)){
             Properties prop = new Properties();
@@ -89,14 +106,21 @@ public class WordleServerMain {
             NUM_THREAD=Integer.parseInt(prop.getProperty("num_thread"));
             WORD_DURATION=Integer.parseInt(prop.getProperty("word_duration"));
             REGISTRY_PORT=Integer.parseInt(prop.getProperty("registry_port"));
+            UDP_PORT=Integer.parseInt(prop.getProperty("udp_port"));
             SERVER_NAME=prop.getProperty("server_name");
             System.out.println("PORT_NUMBER:"+PORT_NUMBER+"\nNUM_THREAD:"+NUM_THREAD+"\nWORD_DURATION:"+WORD_DURATION+"\nREGISTRY_PORT:"+REGISTRY_PORT+"\nSERVER_NAME:"+SERVER_NAME); // stampo il valore delle proprieta
         } catch (IOException ex) {
+            System.out.println("IOException sul file di configurazione:");
             ex.printStackTrace();
         }
     }
 
-    /* FUNZIONE PER GESTIRE LA REGISTRAZIONE DEGLI UTENTI TRAMITE RMI*/
+
+     /*
+     * FUNZIONE PER GESTIRE LA REGISTRAZIONE DEGLI UTENTI TRAMITE RMI
+     * @param: registerService= Implementazione dell'interfaccia RegisterService
+     * @throws: RemoteException - Esportazione dello stub fallimentare
+     * */
     static public void RMI_register_start(RegisterServiceImpl registerService){
         try {
             //creo una istanza dell'oggetto remoto

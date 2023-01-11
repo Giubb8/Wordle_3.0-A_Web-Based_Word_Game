@@ -2,7 +2,7 @@
   {
     "username": "cane",
     "password": "cane",
-    "score": 24,
+    "score": 36,
     "playedwords": [
       "unfeedable",
       "scorzonera",
@@ -11,27 +11,117 @@
       "overawning",
       "dicephalus",
       "notopodial",
-      "expertness"
+      "expertness",
+      "disclosure",
+      "sphenodont",
+      "unwalkable",
+      "gonorrheal"
     ],
-    "winnedgame": 8,
+    "winnedgame": 12,
     "average_score": 3,
-    "playedgame": 8
+    "playedgame": 12
   },
   {
-    "username": "pesce",
-    "password": "pesce",
+    "username": "jimmy",
+    "password": "jimmy",
+    "score": 25,
+    "playedwords": [
+      "unbewrayed",
+      "templelike",
+      "unfestered",
+      "interclasp",
+      "scurviness",
+      "acetolysis",
+      "bronchioli",
+      "provitamin",
+      "juxtaposit",
+      "impregnate",
+      "esperantic",
+      "whitmonday",
+      "oversupply",
+      "thyrsoidal",
+      "notidanoid",
+      "perilously",
+      "perisarcal",
+      "northbound",
+      "turkomania",
+      "bergsonism",
+      "viscometer",
+      "littorella",
+      "treasonful",
+      "coequality",
+      "tubulipora"
+    ],
+    "winnedgame": 25,
+    "average_score": 1,
+    "playedgame": 25
+  },
+  {
+    "username": "jimmy",
+    "password": "jimmy",
+    "score": 20,
+    "playedwords": [
+      "unbewrayed",
+      "templelike",
+      "unfestered",
+      "interclasp",
+      "scurviness",
+      "acetolysis",
+      "bronchioli",
+      "provitamin",
+      "juxtaposit",
+      "impregnate",
+      "esperantic",
+      "whitmonday",
+      "oversupply",
+      "thyrsoidal",
+      "notidanoid",
+      "perilously",
+      "perisarcal",
+      "northbound",
+      "turkomania",
+      "bergsonism"
+    ],
+    "winnedgame": 20,
+    "average_score": 1,
+    "playedgame": 20
+  },
+  {
+    "username": "gatto",
+    "password": "gatto",
     "score": 18,
     "playedwords": [
-      "unsoothing",
-      "housemaidy",
-      "semiclosed",
-      "luciferian",
-      "outfreeman",
-      "suicidally"
+      "partialism",
+      "monotocous",
+      "mythogonic",
+      "uncreating",
+      "granulater",
+      "undramatic",
+      "tautonymic",
+      "luncheoner",
+      "patagonian"
     ],
-    "winnedgame": 6,
-    "average_score": 3,
-    "playedgame": 6
+    "winnedgame": 9,
+    "average_score": 2,
+    "playedgame": 9
+  },
+  {
+    "username": "gatto",
+    "password": "gatto",
+    "score": 16,
+    "playedwords": [
+      "partialism",
+      "monotocous",
+      "mythogonic",
+      "uncreating",
+      "granulater",
+      "undramatic",
+      "tautonymic",
+      "luncheoner"
+    ],
+    "winnedgame": 8,
+    "average_score": 2,
+    "playedgame": 8
   },
   {
     "username": "pp",
@@ -52,14 +142,38 @@
     "playedgame": 5
   },
   {
-    "username": "gatto",
-    "password": "gatto",
+    "username": "pesce",
+    "password": "pesce",
+    "score": 14,
+    "playedwords": [
+      "unsoothing",
+      "housemaidy",
+      "semiclosed",
+      "luciferian",
+      "outfreeman",
+      "suicidally",
+      "geographer",
+      "silkflower",
+      "misbaptize",
+      "brashiness",
+      "patellidan",
+      "bansalague",
+      "hydropathy",
+      "silverness"
+    ],
+    "winnedgame": 14,
+    "average_score": 1,
+    "playedgame": 14
+  },
+  {
+    "username": "giacomo",
+    "password": "giacomo",
     "score": 12,
     "playedwords": [
-      "partialism",
-      "monotocous",
-      "mythogonic",
-      "uncreating"
+      "nuptialize",
+      "exsiccatae",
+      "undersally",
+      "submission"
     ],
     "winnedgame": 4,
     "average_score": 3,
@@ -94,5 +208,38 @@
     "winnedgame": 5,
     "average_score": 1,
     "playedgame": 6
+  },
+  {
+    "username": "cuffia",
+    "password": "cuffia",
+    "score": 3,
+    "playedwords": [
+      "solivagant"
+    ],
+    "winnedgame": 1,
+    "average_score": 3,
+    "playedgame": 1
+  },
+  {
+    "username": "popolo",
+    "password": "popolo",
+    "score": 3,
+    "playedwords": [
+      "oncometric"
+    ],
+    "winnedgame": 1,
+    "average_score": 3,
+    "playedgame": 1
+  },
+  {
+    "username": "fiorellino",
+    "password": "fiorellino",
+    "score": 3,
+    "playedwords": [
+      "cervicapra"
+    ],
+    "winnedgame": 1,
+    "average_score": 3,
+    "playedgame": 1
   }
 ]

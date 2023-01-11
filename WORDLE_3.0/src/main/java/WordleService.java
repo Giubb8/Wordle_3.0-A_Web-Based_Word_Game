@@ -1,10 +1,10 @@
 import java.io.*;
 import java.net.*;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.SortedSet;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -15,9 +15,11 @@ import org.json.simple.parser.ParseException;
 
 /* CLASSE CHE IMPLEMENTA IL SERVIZIO DI WORDLE */
 public class WordleService {
+
     /* COSTANTI E CODICI DI ERRORE */
     final private static String USERNAMENOTEXIST="ERR_UNAME_NOT_EXIST";
     final private static String PASSWORDNOMATCH="ERR_PASSWORD_NOT_MATCHING";
+    final private static String ALREADYLOGGED="ALREADYLOGGED";
     final private static String SUCCESS="SUCCESS";
     final private static String WORD_NOT_EXISTS="WORD_NOT_EXISTS";
     private static final int WRONG_WORD = 15001;
@@ -31,26 +33,30 @@ public class WordleService {
     private int multicastport;
     private DatagramSocket ms;
     private final Hashtable<String,Player> players_table;
-    private final StringBuilder secretword;
+    private final StringBuffer secretword;
     private ArrayList<String> played_words;
     private String session_username;
     private Hashtable<String, ArrayList<String>> playedwords;
-    private ArrayList<String> words;
+    private List<String> words;
     private RegisterServiceImpl registerService;
-    /* UTILITIES PER GLI INDIZI */
-    public static final String ANSI_WHITE_BACKGROUND = "\u001B[47m";
-    public static final String ANSI_RESET = "\u001B[0m";
-    public static final String ANSI_BLACK = "\u001B[30m";
-    private static final String ANSI_END = "\u001B[0m";
-    public static final String ANSI_GREEN_BACKGROUND = "\u001B[42m";
-    public static final String ANSI_YELLOW_BACKGROUND = "\u001B[43m";
 
-    public String s_username;
-    public String s_secretword;
-    public int s_score;
-    SortedSet<Player> ranking;
-    ServerCallBackImpl callback;
-    public WordleService(RegisterServiceImpl registerService, StringBuilder secretword, Hashtable<String, ArrayList<String>> playedwords, ArrayList<String> words, DatagramSocket ms, SortedSet<Player> ranking, ServerCallBackImpl callback) throws UnknownHostException, SocketException {
+    /* UTILITIES PER GLI INDIZI */
+    private static final String ANSI_WHITE_BACKGROUND = "\u001B[47m";
+    private static final String ANSI_RESET = "\u001B[0m";
+    private static final String ANSI_BLACK = "\u001B[30m";
+    private static final String ANSI_END = "\u001B[0m";
+    private static final String ANSI_GREEN_BACKGROUND = "\u001B[42m";
+    private static final String ANSI_YELLOW_BACKGROUND = "\u001B[43m";
+
+    private String s_username;
+    private String s_secretword;
+    private int s_score;
+    private SortedSet<Player> ranking;
+    private ServerCallBackImpl callback;
+    private List<String> logged_user;
+
+    /*COSTRUTTORE DEL SERVIZIO WORDLE */
+    public WordleService(RegisterServiceImpl registerService, StringBuffer secretword, Hashtable<String, ArrayList<String>> playedwords, List<String> words, DatagramSocket ms, SortedSet<Player> ranking, ServerCallBackImpl callback, List<String> logged_user) throws UnknownHostException, SocketException {
         this.players_table=registerService.getPlayers_table();
         this.registerService=registerService;
         this.secretword=secretword;
@@ -62,102 +68,127 @@ public class WordleService {
         this.ms=ms;
         this.ranking=ranking;
         this.callback=callback;
-        //System.out.println(ranking);
-        //ms.setReuseAddress(true);
-       // System.out.println("reuse ?"+ms.getReuseAddress());
-
+        this.logged_user=logged_user;
     }
 
-    /* METODO PER EFFETTUARE IL LOGIN DA PARTE DELL'UTENTE */
-    public int login(BufferedReader in, PrintWriter out) throws IOException, InterruptedException {
+    /* METODO PER EFFETTUARE IL LOGIN DA PARTE DELL'UTENTE
+    *  EFFETTUA I CONTROLLI SUI DATI E RESTITUISCE AL CLIENT
+    *  I CODICI DI ERRORE ADATTI AL PROBLEMA SORTO IN  FASE DI LOGIN
+    * @param: in= Stream per la comunicazione in ingresso dal client
+    * @param out= Stream per la comunicazione in uscita verso il client
+    * @returns: username= username dell'utente che si è loggato
+    * @throws: IOException - lettura dati dagli stream
+    * */
+    public String login(BufferedReader in, PrintWriter out) throws IOException {
         /* VARIABILI DI SUPPORTO E STREAM */
-        int ret=OK;
         String username=in.readLine();
         String password=in.readLine();
         System.out.println("Username: "+username+" Password: "+password);
 
-        /* CONTROLLO SUI DATI DELL'UTENTE*/
-            /* CONTROLLO USERNAME */ //TODO NON PERMETTERE L'USO DI USERNAME UGUALI IN FASE DI REGISTRAZIONE
+
+        /* CONTROLLO USERNAME */
         if(!players_table.containsKey(username)){
             System.out.println("Dentro il not");
             out.println(USERNAMENOTEXIST);
-            return ERROR;
+        }
+        else if(logged_user.contains(username)){
+            System.out.println("utente gia loggato");
+            out.println(ALREADYLOGGED);
         }
         else{
             out.println(SUCCESS);
         }
-            /* CONTROLLO PASSWORD CORRISPONDA */ //TODO MAGARI POSSO METTERE DEI VINCOLI SULLE PASSWORD IN FASE DI REGISTRAZIONE
-        if(!players_table.get(username).getPassword().equals(password)){// se la password NON coincide
+        /* CONTROLLO PASSWORD CORRISPONDA */
+        if(!players_table.containsKey(username)||!players_table.get(username).getPassword().equals(password)){// se la password NON coincide
             System.out.println("Dentro il not pass");
             out.println(PASSWORDNOMATCH);
             login(in, out);
         }
-        else{ //altrimenti se la password coincide
+        else{
             out.println(SUCCESS);
             session_username=username;
             System.out.println(registerService.getPlayers_table().get(username));
         }
 
-        return ret;
+        /* AGGIORNO LA LISTA DEGLI UTENTI LOGGATI */
+        logged_user.add(username);
+        /* RETURNO USERNAME PER POTERLO RIMUOVERE QUANDO LOGOUT */
+        return username;
     }
 
-    /* FUNZIONE PER IL LOGOUT DA PARTE DELL'UTENTE */ //TODO ANCORA DA IMPLEMENTARE
+    /* FUNZIONE PER IL LOGOUT DA PARTE DELL'UTENTE
+    * @return: ret= intero per uscire dal while di WordleClientHandler
+    * */
     public int logout(){
         int ret=1;
         System.out.println("logout");
         return ret;
     }
 
-    /* FUNZIONE PER GENERARE GLI INDIZI DA RESTITUIRE ALL'UTENTE */
-    public static  StringBuilder getWordHint(String word,String secWord) {
+    /* FUNZIONE PER GENERARE GLI INDIZI DA RESTITUIRE ALL'UTENTE
+    *  SFRUTTA I CODICI ANSI PER LA COLORAZIONE DEL BACKGROUND
+    *  E DEL FONT DEL TERMINALE
+    * @param: word= Stringa contenente il tentativo dell'utente
+    * @param: s_word= Stringa contenente la parola da indovinare (secretword)
+    * @returns: hints= String contenente l'indizio da fornire al client
+    * */
+    public static  StringBuilder getWordHint(String word,String s_word) {
         StringBuilder hints = new StringBuilder();
-        for (int i = 0; i < secWord.length(); i++) {
-            char currChar = word.charAt(i);
+        for (int i=0; i < s_word.length(); i++) {
+            char curr_character = word.charAt(i);
             String newChar;
-            if (secWord.charAt(i) == currChar) { // lettera nella posizione giusta
-                newChar = ANSI_GREEN_BACKGROUND +ANSI_BLACK+ currChar + ANSI_END;
+            if (s_word.charAt(i) == curr_character) { // lettera nella posizione giusta
+                newChar = ANSI_GREEN_BACKGROUND +ANSI_BLACK+ curr_character + ANSI_END;
             }
-            else if (secWord.indexOf(currChar) != -1) { // lettera c'è ma non nella posizione i
-                newChar = ANSI_YELLOW_BACKGROUND + ANSI_BLACK+ currChar + ANSI_END;
+            else if (s_word.indexOf(curr_character) != -1) { // lettera c'è ma non nella posizione i
+                newChar = ANSI_YELLOW_BACKGROUND + ANSI_BLACK+ curr_character + ANSI_END;
             }
-            else  { // lettera non ce
-                newChar = ANSI_WHITE_BACKGROUND+String.valueOf(currChar);
+            else  {
+                newChar = ANSI_WHITE_BACKGROUND+String.valueOf(curr_character);
             }
             hints.append(newChar);
         }
         return hints;
     }
-    /* FUNZIONE PER AVVIARE IL GIOCO */
-    public int playwordle(StringBuilder secret_word,BufferedReader in, PrintWriter out) throws IOException {
-        System.out.println("sessione userneame "+session_username);
 
+
+    /*
+    *  FUNZIONE PER AVVIARE IL GIOCO, EFFETTUA I CONTROLLI SUI DATI,
+    *  IMPLEMENTA LE FUNZIONALITA' DEL GIOCO, LANCIA IL THREAD PER LA TRADUZIONE DELLA PAROLA
+    *  AGGIORNA LA CLASSIFICA E GESTISCE LA COMUNICAZIONE CON IL CLIENT
+    *
+    * @param: secret_word= StringBuffer contenente la parola segreta per la corrente sessione di gioco
+    * @param: in= Stream per la comunicazione in ingresso dal client
+    * @param out= Stream per la comunicazione in uscita verso il client
+    * @returns: OK|ERROR = codice per segnalare la buona o meno esecuzione del metodo
+    * @throws: IOException - errore nella comunicazione negli stream in/out
+    * @throws: ExecutionException || InterruptedException - errore nella gestione della futureTask
+    *
+    * */
+    public int playwordle(StringBuffer secret_word, BufferedReader in, PrintWriter out) throws IOException, ExecutionException, InterruptedException {
         /* SALVO LA PAROLA SEGRETA CORRENTE IN UNA STRINGA QUINDI IMMUTABLE */
         String current_secretword=secret_word.toString();
+        TranslatorTask t_task=new TranslatorTask(current_secretword);
+        FutureTask<String> futuretask=new FutureTask<String>(t_task);
+        Thread tr_thread=new Thread(futuretask);
+        tr_thread.start();
         /* EFFETTUO CONTROLLO SULLE PAROLE GIOCATE DALL'UTENTE */
-        //boolean condition=(!playedwords.get(session_username).isEmpty() && playedwords.get(session_username).contains(current_secretword));
         boolean condition2=(!registerService.getPlayers_table().get(session_username).getPlayedwords().isEmpty() && registerService.getPlayers_table().get(session_username).getPlayedwords().contains(current_secretword));
         if (condition2){
-            System.out.println("Controllo con la hashtabel");
+            System.out.println("Controllo con la hashtable");
             System.out.println("No more chances for this word");
             System.out.println("Funzione playwordle: Lista parole giocate "+played_words);
             out.println(ERROR_CODE);
             return ERROR;
         }
 
-        /* SE UTENTE NON HA GIOCATO LA PAROLA LA AGGIUNGO ALLA SUA LISTA */
-       // played_words.add(current_secretword);
-        //playedwords.get(session_username).add(secret_word.toString());
-        /*System.out.println("Inserita nuova parola per "+session_username);
-        System.out.println(playedwords);
-        */
-        //System.out.println("Funzione playwordle: Lista parole giocate "+played_words);
-
         /* INVIO RESPONSE E LA SECRET WORD PER LA GESTIONE DELLA STESSA LATO CLIENT */
         out.println(OK_CODE);
         out.println(current_secretword);
         int client_finished=0;
-        int client_response = -1;
-        //System.out.println(words);
+        int client_response =-1;
+
+        /* WHILE PRINCIPALE,SESSIONE DI GIOCO DELL'UTENTE */
         while(client_finished==0){
             String client_guess=in.readLine();
             System.out.println("parola del client:"+client_guess+" "+words.contains(client_guess));
@@ -170,28 +201,31 @@ public class WordleService {
             }
             else{
                 /* SE ESISTE RESTITUISCO L'INDIZIO */
-                out.println(getWordHint(client_guess,current_secretword));//TODO RESTITUIRE O VEDEERE COSA DEVO RESTITUIRE
+                out.println(getWordHint(client_guess,current_secretword));
             }
             client_response=Integer.parseInt(in.readLine());
-            System.out.println("client response:"+client_response);
-
             if(client_response==ERROR_CODE || client_response!=WRONG_WORD)
                 client_finished=1;
-
         }
+        /* SESSIONE DI GIOCO CONCLUSA */
+
+        /* CONTROLLO LA RISPOSTA DEL CLIENT E CALCOLO IL PUNTEGGIO DELLA SESSIONE DI GIOCO */
         int score=0;
         if(client_response!=ERROR_CODE && client_response!=WRONG_WORD)
              score=(client_response*-1)+4;
         System.out.println("score: "+score);
-        /*TODO BLOCCO DA INCLUDERE IN UNA FUNZIONE PERCHE COSI FA SCHIFO */
+
+        /* ESEGUO L'UPDATE DELLA CLASSIFICA */
         updateranking(session_username,current_secretword,ranking,score,callback);
 
-        //System.out.println("RANKING: "+ranking);
+        /* TRADUCO LA PAROLA E LA RESTITUISCO AL CLIENT */
+        /*String traduzione=translateWords(current_secretword);
+        System.out.println("traduzione: "+traduzione);*/
+        String traduzionefuture=futuretask.get();
+        System.out.println("TRADUZIONE FUTURE "+traduzionefuture);
+        out.println(traduzionefuture);
 
-        String traduzione=translateWords(current_secretword);
-        System.out.println("traduzione: "+traduzione);
-        out.println(traduzione);
-
+        /* AGGIORNO L'ULTIMA CONFIGURAZIONE DELLA SESSIONE DI GIOCO PIU RECENTE */
         s_username=session_username;
         s_secretword=current_secretword;
         s_score=score;
@@ -201,31 +235,32 @@ public class WordleService {
 
     }
 
+    /*
+    * FUNZIONE PER AGGIORNARE LA CLASSIFICA AGGIORNA IL FILE JSON ASSOCIATO
+    * CONTROLLA SE LA CLASSIFICA SI AGGIORNA NELLE PRIME 3 POSIZIONI
+    * E COMUNICA AL CLIENT TRAMITE CALLBACK
+    *
+    * @param: session_username= username del quale bisogna aggiornare la classifica
+    * @param: current_secretword= secretword giocata dall'utente al momento nel quale l'update viene effettuato
+    * @param: ranking= SortedSet che implementa la classifica
+    * @param: score= punteggio effettuato dall'utente
+    * @param: callback= istanza per gestire la comunicazione tramite RMI Callback
+    * */
     private void updateranking(String session_username, String current_secretword, SortedSet<Player> ranking, int score, ServerCallBackImpl callback) throws RemoteException {
         Player prev;
         prev=players_table.get(session_username);
+        String ranking_path="../resources/Ranking.json";
 
+        /* CONTROLLO SULLO STATO DELLA CLASSIFICA */
         if(ranking.contains(prev)){
-            System.out.println("ranking contains player");
             ranking.remove(prev);
         }
-       /* Iterator iteratore=ranking.iterator();
-        while(iteratore.hasNext()){
-            Player player= (Player) iteratore.next();
-            if (player.getUsername().equals(session_username)){
-                System.out.println("TROVATO cont"+ranking.contains(player));
-                ranking.remove(player);
-                System.out.println("player rimosso");
-            }
-        }*/
-        System.out.println("-------------------------------------------");
-        System.out.println(""+ranking);
-        System.out.println("-------------------------------------------");
 
+        /* UPDATE EFFETTIVO DELLA CLASSIFICA  */
         registerService.updateplayer(session_username,current_secretword,score);
         ranking.add(players_table.get(session_username));
-        System.out.println("ranking "+ranking);
-        String ranking_path="src/main/resources/Ranking.json";
+
+        /* AGGIORNO IL FILE */
         Gson gson=new GsonBuilder().setPrettyPrinting().create();
         try {
             FileOutputStream fos=new FileOutputStream(ranking_path);
@@ -238,7 +273,8 @@ public class WordleService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        /*inserire che se e tra le prime tre posizioni allora invio una callback*/
+
+        /* FACCIO IL CONTROLLO SULLA POSIZIONE OTTENUTA,NEL CASO FOSSE TRA LE PRIME 3 -> CALLBACK UPDATE */
         Iterator iterator=ranking.iterator();
         int i=1;
         while(iterator.hasNext() && i<=3){
@@ -249,24 +285,36 @@ public class WordleService {
         }
     }
 
+    /* FUNZIONE PER LA CONDIVISIONE DEI RISULTATI CON UDP MULTICASTING
+    * @param: out= stream per la comunicazione verso l'utente
+    * @throws: IOException - errori nella comunicazione tramite stream
+    * */
     public  int share(PrintWriter out) throws IOException {
         byte[] data;
-        String tosend=""+s_username+" for "+s_secretword+"scored:"+s_score;
+        String tosend;
+        if(s_username==null ||s_secretword==null||s_username.equals("") || s_secretword.equals("") )
+             tosend=(WORD_NOT_EXISTS);
+        else
+            tosend=""+s_username+" for "+s_secretword+" scored:"+s_score;
         data=tosend.getBytes();
+
+        /* INVIO IL PACCHETTO */
         DatagramPacket dp=new DatagramPacket(data,data.length,multicast_group,multicastport);
         ms.send(dp);
         out.println(OK_CODE);
+
+        /* RESET DELLE VARIABILI */
         s_score=0;
         s_username=null;
         s_secretword=null;
         return 0;
     }
+
+    /* FUNZIONE PER LA TRADUZIONE DELLE PAROLE CON MYMEMORY */ //TODO FORSE CANCELLARE E LASCIARE AL NUOVO THREAD IL COMPITO
     public static String translateWords(String word) throws IOException {
-        //Richiedo all'url la parola
-        URL url1 = new URL("https://api.mymemory.translated.net/get?q=" + word + "&langpair=en|it");
-        String traduzione="";
-        String stampa1=new String();
-        try (BufferedReader in = new BufferedReader(new InputStreamReader(url1.openStream()))) {
+        URL url= new URL("https://api.mymemory.translated.net/get?q=" + word + "&langpair=en|it");
+        String traduzione=new String();
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()))) {
             StringBuilder inputLine = new StringBuilder();
             String reader;
 
@@ -274,40 +322,51 @@ public class WordleService {
                 inputLine.append(reader);
             }
 
+            /* CREAZIONE DEGLI OGGETTI JSON */
             JSONObject jsonObject;
             JSONParser parser = new JSONParser();
 
             try {
                 jsonObject = (JSONObject) parser.parse(inputLine.toString());
-
                 JSONArray array = (JSONArray) jsonObject.get("matches");
-
                 ArrayList<String> tmpArray = new ArrayList<String>(array.size());
                 //Prendo il JSON ricevuto e per ogni elemento prendo solamente la traduzione e la inserisco nella ArrayList
-                for (Object o : array) {
+                for (Object o : array) {/* TODO CONTROLLARE SE POSSO LEVARE QUESTO FOR E SEMPLICEMENTE FARE TRADUZIONE=*/
                     JSONObject obj = (JSONObject) o;
-                    stampa1 = (String) obj.get("translation");
-                    System.out.println(stampa1+""+obj.toString());
-                    tmpArray.add(stampa1);
-                    traduzione.concat(stampa1);
-
+                    traduzione = (String) obj.get("translation");
+                    System.out.println(traduzione+""+obj.toString());
                 }
-                System.out.println(tmpArray);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-
         } catch (MalformedURLException mue) {
             mue.printStackTrace(System.err);
         }
-        return stampa1;
+        return traduzione;
     }
 
+    /* FUNZIONE PER MANDARE LE STATISTICHE DELL'UTENTE
+    *
+    * @param: in= Stream per la comunicazione in ingresso dal client
+    * @param out= Stream per la comunicazione in uscita verso il client
+    * */
     public int sendstats(BufferedReader in, PrintWriter out) {
         int ret=0;
         String stat=this.players_table.get(session_username).toString();
         System.out.println("STATISTICHE\n"+stat);
         out.println(this.players_table.get(session_username));
+        return ret;
+    }
+
+    /* FUNZIONE PER MANDARE LA CLASSIFICA ALL'UTENTE
+    *
+    * @param: in= Stream per la comunicazione in ingresso dal client
+    * @param out= Stream per la comunicazione in uscita verso il client
+    * */
+    public int showranking(BufferedReader in, PrintWriter out) {
+        int ret=0;
+        out.println(ranking.toString());
+        out.println("stop");
         return ret;
     }
 }
