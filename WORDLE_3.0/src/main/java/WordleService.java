@@ -175,8 +175,7 @@ public class WordleService {
         /* EFFETTUO CONTROLLO SULLE PAROLE GIOCATE DALL'UTENTE */
         boolean condition2=(!registerService.getPlayers_table().get(session_username).getPlayedwords().isEmpty() && registerService.getPlayers_table().get(session_username).getPlayedwords().contains(current_secretword));
         if (condition2){
-            System.out.println("Controllo con la hashtable");
-            System.out.println("No more chances for this word");
+            System.out.println("Tentativi terminati");
             System.out.println("Funzione playwordle: Lista parole giocate "+played_words);
             out.println(ERROR_CODE);
             return ERROR;
@@ -212,17 +211,15 @@ public class WordleService {
         /* CONTROLLO LA RISPOSTA DEL CLIENT E CALCOLO IL PUNTEGGIO DELLA SESSIONE DI GIOCO */
         int score=0;
         if(client_response!=ERROR_CODE && client_response!=WRONG_WORD)
-             score=(client_response*-1)+4;
+             score=(client_response*-1)+13;
         System.out.println("score: "+score);
 
         /* ESEGUO L'UPDATE DELLA CLASSIFICA */
         updateranking(session_username,current_secretword,ranking,score,callback);
 
         /* TRADUCO LA PAROLA E LA RESTITUISCO AL CLIENT */
-        /*String traduzione=translateWords(current_secretword);
-        System.out.println("traduzione: "+traduzione);*/
         String traduzionefuture=futuretask.get();
-        System.out.println("TRADUZIONE FUTURE "+traduzionefuture);
+        System.out.println("TRADUZIONE "+traduzionefuture);
         out.println(traduzionefuture);
 
         /* AGGIORNO L'ULTIMA CONFIGURAZIONE DELLA SESSIONE DI GIOCO PIU RECENTE */
@@ -249,7 +246,7 @@ public class WordleService {
     private void updateranking(String session_username, String current_secretword, SortedSet<Player> ranking, int score, ServerCallBackImpl callback) throws RemoteException {
         Player prev;
         prev=players_table.get(session_username);
-        String ranking_path="src/main/resources/Ranking.json";
+        String ranking_path="../resources/Ranking.json";
 
         /* CONTROLLO SULLO STATO DELLA CLASSIFICA */
         if(ranking.contains(prev)){

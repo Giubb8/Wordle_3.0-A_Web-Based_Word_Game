@@ -23,7 +23,7 @@ public class RegisterServiceImpl implements RegisterService{
     private final Hashtable<String,Player> players_table;
     private final Player testplayer=new Player("FrancoMicalizzi","Stridio",0);
     private final Gson gson=new GsonBuilder().setPrettyPrinting().create();
-    private final String playersdata_path="src/main/resources/PlayersData.json";
+    private final String playersdata_path="../resources/PlayersData.json";
     private Hashtable<String, ArrayList<String>> playedwords;
 
     /* RICREA LA TABELLA DEGLI UTENTI E AGGIORNA I VALORI

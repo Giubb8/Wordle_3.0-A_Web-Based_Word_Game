@@ -24,6 +24,10 @@ public class WordleClientMain {
     final private static int OK_CODE=12002;
     private static int gameplayed=0;
 
+    /*
+    * @author: Andrea Carollo
+    * https://github.com/Giubb8
+    * */
 
     public static void main(String[] args) throws IOException, NotBoundException {
 
@@ -63,7 +67,8 @@ public class WordleClientMain {
                 System.out.println("uscito dal login client");
                 break;
             }
-            default :{ System.out.println("SPIEGAZIONE");break;}
+            default :{ System.out.println("Wordle 3.0 è una versione shell dell'omonimo e famoso gioco Wordle,rilasciato nel 2018 dal New York Times.\n" +
+                    "Questa versione prevede interazione via CLI (Command Line Interface) e una pool di parole di 10 lettere,con 12 tentativi massimi.");break;}
         }
 
         /* MAIN LOOP DEL CLIENT FINO A QUANDO NON EFFETTUO IL LOGOUT O INTERROMPO PRENDO COMANDI */
@@ -96,7 +101,6 @@ public class WordleClientMain {
                 }
                 case 6:{
                     showmeranking(input,output);
-                    System.out.println("uscito da showranking");
                     break;
                 }
                 default : {
@@ -109,7 +113,11 @@ public class WordleClientMain {
 
     }
 
-    /* FUNZIONE PER RICEVERE LA CLASSIFICA */
+    /* FUNZIONE PER RICEVERE LA CLASSIFICA
+    * @param: input= Stream per la comunicazione in ingresso dal Server
+    * @param: output= Stream per la comunicazione in uscita verso il Server
+    * @throws: IOException - problemi comunicazione negli streams
+    * */
     private static void showmeranking(BufferedReader input, PrintWriter output) throws IOException {
         output.println("showrank");
         String line;
@@ -121,7 +129,11 @@ public class WordleClientMain {
         }
     }
 
-    /* FUNZIONE PER LA GESTIONE DELLE CALLBACK */
+    /* FUNZIONE PER LA GESTIONE DELLE CALLBACK
+    * @param: rank_update= Arraylist contenente le notifiche ricevute dal server riguardo la classifica
+    * @throws: RemoteException - problemi nella funzione chiamata nello stub
+    * @throws: NotBoundException - lookup in un registro non esistente o non bindato
+    * */
     private static void handlecallback(ArrayList<String> rank_update) throws RemoteException, NotBoundException {
         Registry registry = LocateRegistry.getRegistry(5000);
         String name = "Server";
@@ -131,7 +143,11 @@ public class WordleClientMain {
         server.registerForCallback(stub);
     }
 
-    /* FUNZIONE PER MOSTRARE LE STATISTICHE DELL'UTENTE */
+    /* FUNZIONE PER MOSTRARE LE STATISTICHE DELL'UTENTE
+    * @param: input= Stream per la comunicazione in ingresso dal Server
+    * @param: output= Stream per la comunicazione in uscita verso il Server
+    * @throws: IOException - problemi comunicazione negli streams
+    * */
     private static void showstats(BufferedReader input, PrintWriter output) throws IOException {
         output.println("statistics");
         System.out.println("Statistiche dell'utente:");
@@ -145,7 +161,11 @@ public class WordleClientMain {
     }
 
 
-    /* METODO PER LA CONDIVISIONE DELL'ULTIMA PARTITA */
+    /* METODO PER LA CONDIVISIONE DELL'ULTIMA PARTITA
+     * @param: input= Stream per la comunicazione in ingresso dal Server
+     * @param: output= Stream per la comunicazione in uscita verso il Server
+     * @throws: IOException - problemi comunicazione negli streams
+    * */
     private static void share(BufferedReader input, PrintWriter output) throws IOException {
         if(gameplayed>0){// controllo se l'utente abbia gia' giocato o meno
             output.println("share");
@@ -163,7 +183,9 @@ public class WordleClientMain {
     }
 
 
-    /* METODO PER LA VISUALIZZAZIONE DELLE NOTIFICHE RICEVUTE */
+    /* METODO PER LA VISUALIZZAZIONE DELLE NOTIFICHE RICEVUTE
+    * @param: notification=Lista sincronizzata contenente le notifiche dal server
+    * */
     private static void showMeSharing(List<String> notification) {
         if(notification.size()==0)
             System.out.println("Ancora Nessuna Notifica Ricevuta");
@@ -176,7 +198,11 @@ public class WordleClientMain {
     }
 
 
-    /* METODO PER GIOCARE A WORDLE */
+    /* METODO PER GIOCARE A WORDLE
+     *@param: input= Stream per la comunicazione in ingresso dal Server
+     *@param: output= Stream per la comunicazione in uscita verso il Server
+     *@throws: IOException - problemi comunicazione negli streams
+    * */
     private static void playwordle(BufferedReader input, PrintWriter output) throws IOException {
         String secretword;
         Scanner stdin=new Scanner(System.in);
@@ -185,7 +211,6 @@ public class WordleClientMain {
 
         /* CONTROLLO CHE L'UTENTE NON ABBIA GIA GIOCATO QUESTA PAROLA E GESTISCO L'ERRORE */
         int response=Integer.parseInt( input.readLine());
-        System.out.println("respone ricevuto: "+response);
         if(response==ERROR_CODE){
             /*gestione dell'errore*/
             System.out.println("Hai gia effettuato il tuo tentativo per questa parola");
@@ -205,7 +230,8 @@ public class WordleClientMain {
 
             /* INVIO IL GUESS AL SERVER ATTRAVERSO LA FUNZIONE SENDWORD() */
             StringBuilder retstring=new StringBuilder(sendWord(guess,input,output));
-            System.out.println(retstring);
+            System.out.println(retstring+ANSI_RESET);
+            System.out.println(ANSI_RESET);
 
             /* SE LA PAROLA INVIATA NON ESISTE */
             if(retstring.toString().equals(WORD_NOT_EXISTS)){
@@ -242,7 +268,12 @@ public class WordleClientMain {
     }
 
 
-    /* METODO PER INVIARE IL GUESS AL SERVER */
+    /* METODO PER INVIARE IL GUESS AL SERVER
+     * @param: guess= Stringa contenente il guess del client
+     * @param: input= Stream per la comunicazione in ingresso dal Server
+     * @param: output= Stream per la comunicazione in uscita verso il Server
+     * @throws: IOException - problemi comunicazione negli streams
+    * */
     static public StringBuilder sendWord(String guess,BufferedReader input, PrintWriter output) throws IOException {
         output.println(guess);
         StringBuilder retstring= new StringBuilder(input.readLine());
@@ -254,8 +285,11 @@ public class WordleClientMain {
         System.out.println("Logout effettuato");
     }
 
-    /* METODO PER LA REGISTRAZIONE DI UN NUOVO GIOCATORE */
-    static public void register(PrintWriter output) throws RemoteException {
+    /* METODO PER LA REGISTRAZIONE DI UN NUOVO GIOCATORE
+     * @param: output= Stream per la comunicazione in uscita verso il Server
+     *
+    * */
+    static public void register(PrintWriter output) {
         String login="login";
         output.println(login);
 
@@ -290,7 +324,13 @@ public class WordleClientMain {
         }
     }
 
-    /* METODO PER IL LOGIN DEL CLIENT */
+    /* METODO PER IL LOGIN DEL CLIENT
+     * @param: input= Stream per la comunicazione in ingresso dal Server
+     * @param: output= Stream per la comunicazione in uscita verso il Server
+     * @param: notification= Lista Sincronizzata per contenere le notifiche dal server
+     * @throws: IOException - problemi comunicazione negli streams
+    *
+    * */
     static public void login(BufferedReader input,PrintWriter output,List<String> notification) throws IOException {
         Scanner stdin = new Scanner(System.in);
 
@@ -325,7 +365,10 @@ public class WordleClientMain {
 
     }
 
-    /* METODO PER LA CONFIGURAZIONE DEL CLIENT DAL FILE PASSATO COME ARGOMENTO */
+    /* METODO PER LA CONFIGURAZIONE DEL CLIENT DAL FILE PASSATO COME ARGOMENTO
+    * @param: configfile_path= Stringa contenente il path per  il file di configurazione
+    *
+    * */
     static public void configclient(String configfile_path){
         try (InputStream input = new FileInputStream(configfile_path)){
             Properties prop = new Properties(); //classe apposita per settare le proprieta degli oggetti

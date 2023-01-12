@@ -56,7 +56,6 @@ public class Player implements Serializable,Comparable<Player> {
             this.score=this.winnedgame*this.average_score;
         }
         this.playedgame++;
-
     }
 
     /* FUNZIONE PER RESTITUIRE LE PAROLE GIOCATE DAL GIOCATORE */

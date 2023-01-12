@@ -56,17 +56,30 @@ public class WordleClientHandler implements  Runnable{
                 System.out.println(input);
                 if(input==null)
                     break;
-                switch (input) { //enhanced switch di java 12 dare un occhio in teoria non c'e' bisogno di break
-                    case "login" -> username = wordleService.login(in, out);
-                    case "logout" -> is_over = wordleService.logout();
-                    case "playwordle" ->is_over=wordleService.playwordle(secretword,in,out);
-                    case "share" -> is_over=wordleService.share(out);
-                    case "statistics" -> is_over=wordleService.sendstats(in,out);
-                    case "showrank"->is_over=wordleService.showranking(in,out);
-                    default -> {
+                //enhanced switch di java 12 dare un occhio in teoria non c'e' bisogno di break
+                switch (input) {
+                    case "login":{
+                        username = wordleService.login(in, out);
+                        break;}
+                    case "logout":{
+                        is_over = wordleService.logout();
+                        break;}
+                    case "playwordle":{
+                        is_over = wordleService.playwordle(secretword, in, out);
+                        break;}
+                    case "share":{
+                        is_over = wordleService.share(out);
+                        break;}
+                    case "statistics":{
+                        is_over = wordleService.sendstats(in, out);
+                        break;}
+                    case "showrank":{
+                        is_over = wordleService.showranking(in, out);
+                        break;}
+                    default:{
                         is_over = 1;
                         System.out.println("Comunicazione Terminata");
-                    }
+                        break;}
                 }
             } catch (IOException | InterruptedException e) {
                 System.out.println();

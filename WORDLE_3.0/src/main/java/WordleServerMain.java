@@ -15,8 +15,12 @@ import java.util.*;
 import java.util.concurrent.ThreadPoolExecutor;
 import static java.util.concurrent.Executors.newCachedThreadPool;
 
-//@author: Andrea Carollo
-// https://github.com/Giubb8
+/*
+* @author: Andrea Carollo
+* https://github.com/Giubb8
+*/
+
+
 
 /* SERVER DI WORDLE 3.0*/
 public class WordleServerMain {
@@ -27,7 +31,7 @@ public class WordleServerMain {
     private static int REGISTRY_PORT;
     private static String SERVER_NAME;
     private static int UDP_PORT;
-    private static final String path_to_wordsfile="src/main/resources/words.txt";
+    private static final String path_to_wordsfile="../resources/words.txt";
 
 
     public static void main(String[] args) throws IOException, AlreadyBoundException {
@@ -36,11 +40,11 @@ public class WordleServerMain {
         String configfile_path=args[0];
         StringBuffer secretword=new StringBuffer();
         ThreadPoolExecutor threadpool=(ThreadPoolExecutor) newCachedThreadPool();
-        Hashtable<String,ArrayList<String>> playedwords=new Hashtable<>();//FORSE POSSO ELIMINARE         //TODO FORSE POSSO TRASFORMARE QUESTA HASHTABLE IN UNA HASHTABLE CONTENTENTE TIPO LE STATISTICHE DI OGNI GIOCATORE METTENDO UN OGGETTO AL POSTO DI ARRAYLIST
+        Hashtable<String,ArrayList<String>> playedwords=new Hashtable<>();//TODO FORSE POSSO ELIMINARE
         RegisterServiceImpl registerService=new RegisterServiceImpl(PORT_NUMBER,REGISTRY_PORT,SERVER_NAME,playedwords);//Oggetto per la registrazione degli utenti tramite RMI
 
         /* CREO E RIEMPIO LA CLASSIFICA */
-        String ranking_path="src/main/resources/Ranking.json";
+        String ranking_path="../resources/Ranking.json";
         JsonReader reader = new JsonReader(new FileReader(ranking_path));
         PlayerRankingComparator comparator=new PlayerRankingComparator();
         TreeSet<Player> treeSet=new Gson().fromJson(reader, new TypeToken<TreeSet<Player>>() {}.getType());
@@ -61,8 +65,7 @@ public class WordleServerMain {
             /* CREO E AVVIO IL MANAGER PER LA PAROLA SEGRETA */
             SecretWordManager sw_manager = new SecretWordManager(secretword, WORD_DURATION);
             sw_manager.start();
-            //<String> words = sw_manager.txt_to_list(path_to_wordsfile);
-            List<String> words= (List<String>) Collections.synchronizedList(new ArrayList<String>()); //LISTA PER CONTENERE GLI UTENTI LOGGATI
+            List<String> words= (List<String>) Collections.synchronizedList(new ArrayList<String>());
             words.addAll(sw_manager.txt_to_list(path_to_wordsfile));
             /* STA IN ATTESA DELLE CONNESSIONI CON I CLIENT */
             while (true) {

@@ -18,7 +18,7 @@ public class ServerCallBackImpl extends RemoteObject implements ServerCallBackIn
     public void registerForCallback(ClientCallBackInterface ClientInterface) throws RemoteException {
         if (!clients.contains(ClientInterface)) {
             clients.add(ClientInterface);
-            System.out.println("New client registered." );
+            System.out.println("Nuovo Client Registrato Callback." );
         }
     }
 

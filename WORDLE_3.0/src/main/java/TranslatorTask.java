@@ -45,9 +45,8 @@ public class TranslatorTask implements Callable<String> {
             try {
                 jsonObject = (JSONObject) parser.parse(inputLine.toString());
                 JSONArray array = (JSONArray) jsonObject.get("matches");
-                ArrayList<String> tmpArray = new ArrayList<String>(array.size());
                 //Prendo il JSON ricevuto e per ogni elemento prendo solamente la traduzione e la inserisco nella ArrayList
-                for (Object o : array) {/* TODO CONTROLLARE SE POSSO LEVARE QUESTO FOR E SEMPLICEMENTE FARE TRADUZIONE=*/
+                for (Object o : array) {
                     JSONObject obj = (JSONObject) o;
                     traduzione = (String) obj.get("translation");
                     System.out.println(traduzione+""+obj.toString());
