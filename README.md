@@ -1,5 +1,5 @@
-# Wordle 3.0 - A Web-Based Word Game
-🟩🟨⬜
+# Wordle 3.0 - A Web-Based Word Game 🟩🟨⬜
+
 ### Overview 📝
 
 This project involves the implementation of Wordle, a web-based word game that went viral at the end of 2021. In this section, we will describe the general rules of the game, followed by the specifics of the version of Wordle to be implemented.
